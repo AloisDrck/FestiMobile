@@ -79,8 +79,8 @@ struct EditUserView: View {
             .alert(isPresented: $isShowingAlert) {
                 Alert(title: Text("Erreur"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
-            .navigationTitle("Modifier l'utilisateur")
         }
+        .navigationTitle("Modifier l'utilisateur")
     }
     
     // Fonction pour enregistrer les modifications

@@ -35,4 +35,12 @@ class JeuDepotViewModel: ObservableObject {
             }
         }
     }
+    
+    func fetchJeuxDepotByUserId(userId: String) {
+        service.fetchJeuxDepotByUserId(userId: userId) { [weak self] jeux in
+            DispatchQueue.main.async {
+                self?.jeux = jeux
+            }
+        }
+    }
 }
