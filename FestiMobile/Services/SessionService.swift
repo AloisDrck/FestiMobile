@@ -12,7 +12,7 @@ class SessionService: ObservableObject {
     @Published var isActive: Bool = false
     @Published var session: Session?
 
-    private let apiUrl = "http://172.20.10.3:3002/api/session" // Faut que tu mette ton adresse IP au lieux de la mienne avant le port
+    private let apiUrl = "https://festivawin-back-16b79a35ef75.herokuapp.com/api/session" // Faut que tu mette ton adresse IP au lieux de la mienne avant le port
 
     func fetchSessionStatus() {
         guard let url = URL(string: "\(apiUrl)/activesession") else { return }
