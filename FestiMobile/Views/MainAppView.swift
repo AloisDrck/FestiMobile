@@ -14,28 +14,32 @@ struct MainAppView: View {
     @State private var maxPrice: Double?
     @State private var showFilters = false
     @State private var availabilityFilter = "all"
+    @State private var navigateToLogin: Bool = false
 
     var body: some View {
         NavigationView {
             VStack {
-                // Barre de recherche
-                TextField("Rechercher un jeu", text: $searchTerm, onEditingChanged: { _ in
-                    viewModel.filterItems(searchTerm: searchTerm, minPrice: minPrice, maxPrice: maxPrice, availability: availabilityFilter)
-                })
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-
-                // Bouton pour afficher les filtres supplémentaires
-                Button(action: {
-                    showFilters.toggle()
-                }) {
-                    Text(showFilters ? "Masquer les filtres" : "+ de filtres")
-                        .fontWeight(.bold)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                HStack {
+                    // Barre de recherche
+                    TextField("Rechercher un jeu", text: $searchTerm, onEditingChanged: { _ in
+                        viewModel.filterItems(searchTerm: searchTerm, minPrice: minPrice, maxPrice: maxPrice, availability: availabilityFilter)
+                    })
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+                    
+                    // Bouton pour afficher les filtres supplémentaires à droite
+                    Button(action: {
+                        showFilters.toggle()
+                    }) {
+                        Image(systemName: showFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
+                            .resizable()
+                            .frame(width: 24, height: 24) // Taille de l'icône
+                            .foregroundColor(.blue)
+                            .padding()
+                    }
                 }
+                .padding(.horizontal)
+                
 
                 // Filtres avancés
                 if showFilters {
@@ -86,26 +90,39 @@ struct MainAppView: View {
                     .padding()
                 }
 
-                // Liste des jeux
                 List {
                     ForEach(viewModel.jeux) { item in
-                        VStack(alignment: .leading) {
-                            Text(item.nomJeu)
-                                .font(.headline)
-                            Text("Éditeur: \(item.editeurJeu)")
-                                .font(.subheadline)
-                            Text("Prix: \(item.prixJeu, specifier: "%.2f")€")
-                                .font(.subheadline)
-                            Text("Quantité: \(item.quantiteJeuDisponible)")
-                                .font(.subheadline)
-                            Text("Statut: \(item.statutJeu.rawValue)")
-                                .font(.subheadline)
-                            Text("Frais de dépôt: \(item.fraisDepot, specifier: "%.2f")€")
-                                .font(.subheadline)
-                            Text("Remise: \(item.remiseDepot)%")
-                                .font(.subheadline)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.2), .gray.opacity(0.1)]), startPoint: .leading, endPoint: .trailing))
+                                .frame(height: 80)
+
+                            HStack {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(item.nomJeu)
+                                        .font(.headline)
+                                        .bold()
+                                        .foregroundColor(.black)
+                                    
+                                    Text("Éditeur: \(item.editeurJeu)")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("\(item.prixJeu, specifier: "%.2f")€")
+                                        .font(.title2)
+                                        .bold()
+                                        .foregroundColor(.black)
+                                    
+                                    Text("Quantité: \(item.quantiteJeuDisponible)")
+                                        .font(.subheadline)
+                                        .foregroundColor(quantiteColor(for: item.quantiteJeuDisponible))
+                                }
+                            }
+                            .padding()
                         }
-                        .padding()
+                        .padding(.horizontal)
                     }
                 }
                 .onAppear {
@@ -113,6 +130,32 @@ struct MainAppView: View {
                 }
             }
             .navigationTitle("Liste des jeux")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        navigateToLogin = true
+                    }) {
+                        Image("Button")
+                            .resizable()
+                            .frame(width: 32, height: 48)
+                    }
+                    .navigationDestination(isPresented: $navigateToLogin) {
+                        LoginView()
+                    }
+                }
+            }
         }
+        .navigationTitle("Jeux")
+    }
+}
+
+// Fonction pour déterminer la couleur du texte en fonction de la quantité
+private func quantiteColor(for quantite: Int) -> Color {
+    if quantite > 10 {
+        return .green
+    } else if quantite >= 1 {
+        return .orange
+    } else {
+        return .red
     }
 }

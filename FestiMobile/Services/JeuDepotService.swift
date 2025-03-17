@@ -40,29 +40,54 @@ class JeuDepotService: ObservableObject {
 //            }
 //        }
 //    }
+    
     func filterItems(searchTerm: String, minPrice: Double?, maxPrice: Double?, availability: String, completion: @escaping ([JeuDepot]) -> Void) {
-        let queryItems = [
-            URLQueryItem(name: "search", value: searchTerm),
-            URLQueryItem(name: "minPrice", value: minPrice.map { "\($0)" }),
-            URLQueryItem(name: "maxPrice", value: maxPrice.map { "\($0)" }),
-            URLQueryItem(name: "availability", value: availability)
-        ].compactMap { $0 }
-
-        var urlComponents = URLComponents(string: "http://172.20.10.3:3002/api/jeuDepot")!
-        urlComponents.queryItems = queryItems
-
-        guard let url = urlComponents.url else { return }
-
+        var urlComponents = URLComponents(string: "https://festivawin-back-16b79a35ef75.herokuapp.com/api/jeuDepot/filter")
+        
+        var queryItems: [URLQueryItem] = []
+        if !searchTerm.isEmpty {
+            queryItems.append(URLQueryItem(name: "searchTerm", value: searchTerm))
+        }
+        if let minPrice = minPrice {
+            queryItems.append(URLQueryItem(name: "minPrice", value: String(minPrice)))
+        }
+        if let maxPrice = maxPrice {
+            queryItems.append(URLQueryItem(name: "maxPrice", value: String(maxPrice)))
+        }
+        if availability != "all" {
+            queryItems.append(URLQueryItem(name: "availabilityFilter", value: availability == "Disponible" ? "Disponible" : "Vendu"))
+        }
+        
+        urlComponents?.queryItems = queryItems
+        
+        guard let url = urlComponents?.url else { return }
+        
+//        URLSession.shared.dataTask(with: url) { data, _, error in
+//            if let data = data {
+//                do {
+//                    let decodedData = try JSONDecoder().decode([JeuDepot].self, from: data)
+//                    DispatchQueue.main.async {
+//                        completion(decodedData)
+//                    }
+//                } catch {
+//                    print("Erreur de décodage :", error)
+//                }
+//            }
+//        }.resume()
+        
         URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else { return }
-
-            do {
-                let decodedData = try JSONDecoder().decode([JeuDepot].self, from: data)
-                DispatchQueue.main.async {
-                    completion(decodedData)
+            if let data = data {
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data, options: [])
+//                    print("Réponse brute du backend : \(json)")
+                    
+                    let decodedData = try JSONDecoder().decode([JeuDepot].self, from: data)
+                    DispatchQueue.main.async {
+                        completion(decodedData)
+                    }
+                } catch {
+                    print("Erreur de décodage 2 :", error)
                 }
-            } catch {
-                print("Erreur de décodage JSON: \(error)")
             }
         }.resume()
     }

@@ -27,4 +27,12 @@ class JeuDepotViewModel: ObservableObject {
             }
         }
     }
+    
+    func fetchFilteredJeux(searchTerm: String?, minPrice: Double?, maxPrice: Double?, availabilityFilter: String?) {
+        service.filterItems(searchTerm: searchTerm ?? "", minPrice: minPrice, maxPrice: maxPrice, availability: availabilityFilter ?? "all") { jeux in
+            DispatchQueue.main.async {
+                self.jeux = jeux
+            }
+        }
+    }
 }
