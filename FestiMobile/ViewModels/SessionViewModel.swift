@@ -10,6 +10,7 @@ import Foundation
 import Combine
 
 class SessionViewModel: ObservableObject {
+    @Published var sessions: [Session] = [] // Liste des sessions
     @Published var countdownText: String = ""
     @Published var message: String = ""
     @Published var isSessionActive: Bool = false
@@ -18,8 +19,33 @@ class SessionViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
+        fetchSessions()
         observeSessionStatus()
         sessionService.fetchSessionStatus() // Lancer la récupération initiale
+    }
+    
+    func fetchSessions() {
+        sessionService.fetchAllSessions()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    print("Erreur lors de la récupération des sessions:", error)
+                }
+            }, receiveValue: { [weak self] sessions in
+                self?.sessions = sessions
+            })
+            .store(in: &cancellables)
+    }
+    
+    func deleteSession(at indexSet: IndexSet) {
+        guard let index = indexSet.first else { return }
+        let sessionId = sessions[index].id ?? ""
+        
+        sessionService.deleteSession(id: sessionId) { success in
+            if success {
+                self.sessions.remove(at: index)
+            }
+        }
     }
     
     private func observeSessionStatus() {
