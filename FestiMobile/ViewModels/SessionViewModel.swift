@@ -48,6 +48,17 @@ class SessionViewModel: ObservableObject {
         }
     }
     
+    func addSession(_ session: Session, completion: @escaping (Bool, String?) -> Void) {
+        sessionService.addSession(session) { success, errorMessage in
+            if success {
+                self.fetchSessions()
+                completion(true, nil)
+            } else {
+                completion(false, errorMessage)
+            }
+        }
+    }
+    
     private func observeSessionStatus() {
         sessionService.$isActive
             .receive(on: DispatchQueue.main)

@@ -9,10 +9,13 @@ import SwiftUI
 
 struct SessionView: View {
     @StateObject private var sessionVModel = SessionViewModel()
+    @State private var navigateToAddSessionView = false
     
     var body: some View {
         ZStack {
             VStack{
+                
+                // ------------------------ Liste des sessions
                 List {
                     ForEach(sessionVModel.sessions) { session in
                         VStack(alignment: .leading) {
@@ -30,6 +33,24 @@ struct SessionView: View {
                 .onAppear {
                     sessionVModel.fetchSessions()
                 }
+                
+                // ------------------------ Bouton pour ajouter une nouvelle session
+                Button(action: {
+                    navigateToAddSessionView = true
+                }) {
+                    Text("Nouvelle session")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                        .padding()
+                }
+                .sheet(isPresented: $navigateToAddSessionView) {
+                    AddSessionView(viewModel: sessionVModel)
+                }
+                
             }
             .navigationTitle("Liste des Sessions")
         }
