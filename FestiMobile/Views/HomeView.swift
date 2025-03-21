@@ -47,7 +47,7 @@ struct HomeView: View {
                     }
                     
                     if viewModel.isSessionActive {
-                        Button("Continuer vers l'application") {
+                        Button("Voir les jeux") {
                             navigateToMainApp = true
                         }
                         .buttonStyle(.borderedProminent)
@@ -57,7 +57,7 @@ struct HomeView: View {
                         }
                     }
                     
-                    Button("Se connecter en tant qu'admin") {
+                    Button("Connexion") {
                         navigateToLogin = true
                     }
                     .buttonStyle(.bordered)
