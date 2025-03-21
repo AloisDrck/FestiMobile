@@ -12,42 +12,101 @@ struct JeuDepotDetailView: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack(spacing: 15) {
-            Text(jeu.nomJeu)
-                .font(.title)
-                .bold()
-            
-            Text("Éditeur: \(jeu.editeurJeu)")
-                .font(.headline)
-            
-            Text("Prix: \(jeu.prixJeu, specifier: "%.2f")€")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+        NavigationView {
+            VStack(spacing: 20) {
+                // Détails du jeu
+                VStack(alignment: .leading, spacing: 12) {
+                    Group {
+                        HStack {
+                            Text("Éditeur :")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text(jeu.editeurJeu)
+                                .foregroundColor(.secondary)
+                        }
 
-            Text("Quantité disponible: \(jeu.quantiteJeuDisponible)")
-            Text("Quantité vendue: \(jeu.quantiteJeuVendu)")
-            Text("Statut: \(jeu.statutJeu.rawValue)")
-                .foregroundColor(jeu.statutJeu == .disponible ? .green : .red)
+                        HStack {
+                            Text("Prix :")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(jeu.prixJeu, specifier: "%.2f")€")
+                                .foregroundColor(.green)
+                        }
 
-            Text("Date de dépôt: \(jeu.dateDepot, formatter: dateFormatter)")
-            Text("Frais de dépôt: \(jeu.fraisDepot, specifier: "%.2f")€")
-            Text("Remise sur dépôt: \(jeu.remiseDepot, specifier: "%.2f")%")
+                        HStack {
+                            Text("Quantité disponible :")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(jeu.quantiteJeuDisponible)")
+                                .foregroundColor(.primary)
+                        }
 
-            Spacer()
-            Button("Fermer") {
-                dismiss()
+                        HStack {
+                            Text("Quantité vendue :")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(jeu.quantiteJeuVendu)")
+                                .foregroundColor(.primary)
+                        }
+
+                        HStack {
+                            Text("Statut :")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text(jeu.statutJeu.rawValue)
+                                .foregroundColor(jeu.statutJeu == .disponible ? .green : .red)
+                        }
+
+                        HStack {
+                            Text("Date de dépôt :")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text(jeu.dateDepot, formatter: dateFormatter)
+                                .foregroundColor(.secondary)
+                        }
+
+                        HStack {
+                            Text("Frais de dépôt :")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(jeu.fraisDepot, specifier: "%.2f")€")
+                                .foregroundColor(.blue)
+                        }
+
+                        HStack {
+                            Text("Remise sur dépôt :")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(jeu.remiseDepot, specifier: "%.2f")%")
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 5)
+                }
+                .padding(.horizontal)
+
+                // Bouton Fermer
+                Spacer()
+                
+                Button("Fermer") {
+                    dismiss()
+                }
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .padding(.horizontal)
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
+            .navigationTitle("Détails du jeu")
+            .background(Color.gray.opacity(0.1).edgesIgnoringSafeArea(.all))
+            .padding(.bottom)
         }
-        .padding()
     }
 }
 
-// 🔹 Formatter pour afficher correctement la date
 private let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateStyle = .medium

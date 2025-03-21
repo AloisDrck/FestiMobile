@@ -7,8 +7,16 @@
 
 
 struct VenteJeu: Codable, Identifiable {
-    var id: String?
+    var id: String
     var idJeuDepot: String // ID JeuDepot
     var idVente: String // ID Vente
     var quantiteVendus: Int
+    var nomJeu: String?
+    var editeurJeu: String?
+    var prixJeu: Double?
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case idJeuDepot, idVente, quantiteVendus
+    }
 }
