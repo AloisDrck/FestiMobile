@@ -16,13 +16,13 @@ struct AddUserView: View {
     @State private var ville = ""
     @State private var codePostal = ""
     @State private var pays = ""
-    @State private var role: RoleUtilisateur = .vendeur  // Par défaut, le rôle est "Vendeur"
+    @State private var role: RoleUtilisateur = .vendeur
     
     @State private var isShowingAlert = false
     @State private var alertMessage = ""
     
-    @Environment(\.dismiss) private var dismiss  // Permet de fermer la vue après l'ajout
-    @StateObject private var viewModel = UtilisateurViewModel()  // ViewModel pour gérer les utilisateurs
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel = UtilisateurViewModel()
     
     var body: some View {
         NavigationView {
@@ -67,7 +67,6 @@ struct AddUserView: View {
         .navigationTitle("Ajouter un utilisateur")
     }
     
-    // Fonction pour enregistrer un utilisateur
     private func saveUser() {
         guard !nom.isEmpty, !prenom.isEmpty, !email.isEmpty else {
             alertMessage = "Tous les champs doivent être remplis."

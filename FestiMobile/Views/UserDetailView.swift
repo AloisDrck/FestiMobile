@@ -58,36 +58,42 @@ struct UserDetailView: View {
                         } else if let bilan = bilan {
                             Text("Bilan du vendeur")
                                 .font(.title2)
-                                 .fontWeight(.bold)
-                                 .foregroundColor(.primary)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
                             
                             HStack {
-                                  Text("Somme Dues:")
-                                  Spacer()
-                                  Text("\(bilan.sommeDues, specifier: "%.2f") €")
-                                      .foregroundColor(.green)
-                              }
-                              
-                              HStack {
-                                  Text("Total des Frais:")
-                                  Spacer()
-                                  Text("\(bilan.totalFrais, specifier: "%.2f") €")
-                                      .foregroundColor(.red)
-                              }
-                              
-                              HStack {
-                                  Text("Total des Commissions:")
-                                  Spacer()
-                                  Text("\(bilan.totalCommissions, specifier: "%.2f") €")
-                                      .foregroundColor(.blue)
-                              }
-                              
-                              HStack {
-                                  Text("Gains:")
-                                  Spacer()
-                                  Text("\(bilan.gains, specifier: "%.2f") €")
-                                      .foregroundColor(.orange)
-                              }
+                                Text("Total des frais:")
+                                Spacer()
+                                Text("\(bilan.totalFrais, specifier: "%.2f") €")
+                                    .foregroundColor(.red)
+                            }
+                            
+                            HStack {
+                                Text("Total des commissions:")
+                                Spacer()
+                                Text("\(bilan.totalCommissions, specifier: "%.2f") €")
+                                    .foregroundColor(.blue)
+                            }
+                            
+                            HStack {
+                                Text("Somme dues:")
+                                Spacer()
+                                Text("\(bilan.sommeDues, specifier: "%.2f") €")
+                                    .foregroundColor(.green)
+                            }
+                            
+                            HStack {
+                                Text("Gains :")
+                                Spacer()
+                                Text("\(bilan.gains, specifier: "%.2f") €")
+                                    .foregroundColor(.orange)
+                            }
+                            HStack {
+                                Text("Montant final perçu:")
+                                Spacer()
+                                Text("\(String(format: "%.2f", bilan.gains - bilan.sommeDues)) €")
+                                    .foregroundColor(.pink)
+                            }
                         } else if let error = error {
                             Text("Erreur : \(error.localizedDescription)")
                                 .foregroundColor(.red)
@@ -103,8 +109,47 @@ struct UserDetailView: View {
                 
                 // Liste des jeux déposés pour un vendeur
                 if utilisateur.role == .vendeur {
-                    NavigationLink(destination: SellerDepotListView(userId: utilisateur.id)) {
+                    NavigationLink(destination: SellerDepotListView(utilisateur: $utilisateur)) {
                         Text("Liste des jeux déposés")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .padding(.top)
+                    }
+                    NavigationLink(destination: ListView(utilisateur: $utilisateur)) {
+                        Text("Liste des ventes")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .padding(.top)
+                    }
+                    NavigationLink(destination: DepotView(utilisateur: $utilisateur)) {
+                        Text("Faire un dépôt")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .padding(.top)
+                    }
+                }
+                
+                if utilisateur.role == .acheteur {
+                    NavigationLink(destination: ListView(utilisateur: $utilisateur)) {
+                        Text("Liste des achats")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .padding(.top)
+                    }
+                    NavigationLink(destination: AchatView(utilisateur: $utilisateur)) {
+                        Text("Faire un achat")
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.green)

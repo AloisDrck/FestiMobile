@@ -84,4 +84,33 @@ class JeuDepotService: ObservableObject {
             }
         }.resume()
     }
+    
+    func fetchJeuDepotById(jeuId: String, completion: @escaping (Result<JeuDepot, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/\(jeuId)") else {
+            completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "Données manquantes", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let decodedData = try JSONDecoder().decode(JeuDepot.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(decodedData))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
 }

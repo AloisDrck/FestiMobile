@@ -10,6 +10,8 @@ import SwiftUI
 
 class JeuDepotViewModel: ObservableObject {
     @Published var jeux: [JeuDepot] = []
+    @Published var jeuDepot: JeuDepot?
+    @Published var errorMessage: String?
     private let service = JeuDepotService()
 
     func fetchJeux() {
@@ -40,6 +42,17 @@ class JeuDepotViewModel: ObservableObject {
         service.fetchJeuxDepotByUserId(userId: userId) { [weak self] jeux in
             DispatchQueue.main.async {
                 self?.jeux = jeux
+            }
+        }
+    }
+    
+    func loadJeuDepotById(jeuId: String) {
+        service.fetchJeuDepotById(jeuId: jeuId) { result in
+            switch result {
+            case .success(let jeu):
+                self.jeuDepot = jeu
+            case .failure(let error):
+                self.errorMessage = "Erreur: \(error.localizedDescription)"
             }
         }
     }

@@ -27,7 +27,7 @@ struct LoginView: View {
                     }
                     .buttonStyle(LargeButtonStyle())
                     .navigationDestination(isPresented: $navigateToBuyer) {
-                        BuyerView()
+                        ListUserView(isAcheteur: true)
                     }
 
                     Button("Déposer") {
@@ -35,7 +35,7 @@ struct LoginView: View {
                     }
                     .buttonStyle(LargeButtonStyle())
                     .navigationDestination(isPresented: $navigateToSeller) {
-                        SellerView()
+                        ListUserView(isAcheteur: false)
                     }
 
                     // --------------------------------------------------------------
