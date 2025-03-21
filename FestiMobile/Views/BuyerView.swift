@@ -32,6 +32,16 @@ struct BuyerView: View {
                             }
                             .padding()
                         }
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            // Action qui se déclenche lorsque l'utilisateur glisse vers la droite
+                            NavigationLink(destination: EditUserView(utilisateur: $acheteur, viewModel: viewModel)) {
+                                Button {
+                                } label: {
+                                    Label("Éditer", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
+                        }
                     }
                     .onDelete(perform: delete)
                 }
@@ -67,3 +77,4 @@ struct BuyerView: View {
         }
     }
 }
+                                        

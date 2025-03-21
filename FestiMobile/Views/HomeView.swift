@@ -14,58 +14,64 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack {
-                Text("Bienvenue sur FestiMobile")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding()
+            ZStack {
+                Image("backgroundImage")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
                 
-                if !viewModel.message.isEmpty {
-                    Text(viewModel.message)
-                        .font(.headline)
-                        .padding(.top, 10)
-                } else {
-                    Text("Ya pas de message dans le ViewModel")
-                        .font(.headline)
-                        .padding(.top, 10)
-                }
-
-                if !viewModel.countdownText.isEmpty {
-                    Text(viewModel.countdownText)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.blue)
+                VStack {
+                    
+                    Spacer().frame(height: 100) // Pour que ça fasse jolk avec le background sinon cetait trop haut
+                    
+                    if !viewModel.message.isEmpty {
+                        Text(viewModel.message)
+                            .font(.headline)
+                            .padding(.top, 10)
+                    } else {
+                        Text("Ya pas de message dans le ViewModel")
+                            .font(.headline)
+                            .padding(.top, 10)
+                    }
+                    
+                    if !viewModel.countdownText.isEmpty {
+                        Text(viewModel.countdownText)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.blue)
+                            .padding()
+                    } else {
+                        Text("Ya pas de countdown dans le ViewModel")
+                            .font(.headline)
+                            .padding(.top, 10)
+                    }
+                    
+                    if viewModel.isSessionActive {
+                        Button("Continuer vers l'application") {
+                            navigateToMainApp = true
+                        }
+                        .buttonStyle(.borderedProminent)
                         .padding()
-                } else {
-                    Text("Ya pas de countdown dans le ViewModel")
-                        .font(.headline)
-                        .padding(.top, 10)
-                }
-
-                if viewModel.isSessionActive {
-                    Button("Continuer vers l'application") {
-                        navigateToMainApp = true
+                        .navigationDestination(isPresented: $navigateToMainApp) {
+                            MainAppView()
+                        }
                     }
-                    .buttonStyle(.borderedProminent)
+                    
+                    Button("Se connecter en tant qu'admin") {
+                        navigateToLogin = true
+                    }
+                    .buttonStyle(.bordered)
                     .padding()
-                    .navigationDestination(isPresented: $navigateToMainApp) {
-                        MainAppView()
+                    .navigationDestination(isPresented: $navigateToLogin) {
+                        LoginView() // Navigation vers LoginView quand navigateToLogin est true
                     }
                 }
-
-                Button("Se connecter en tant qu'admin") {
-                    navigateToLogin = true
-                }
-                .buttonStyle(.bordered)
                 .padding()
-                .navigationDestination(isPresented: $navigateToLogin) {
-                    LoginView() // Navigation vers LoginView quand navigateToLogin est true
+                .onAppear {
+                    viewModel.fetchSessionStatus() // Assurez-vous que les données sont chargées au début
                 }
-            }
-            .padding()
-            .onAppear {
-                viewModel.fetchSessionStatus() // Assurez-vous que les données sont chargées au début
             }
         }
+        .navigationTitle("Home")
     }
 }

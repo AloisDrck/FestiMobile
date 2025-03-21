@@ -12,14 +12,26 @@ struct Session: Codable, Identifiable {
     var dateDebut: Date
     var dateFin: Date
     var fraisDepot: Double
+    var commission: Double
     var statutSession: String
-
+    
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case dateDebut
         case dateFin
         case fraisDepot
+        case commission
         case statutSession
+    }
+    
+    init(id: String? = nil, dateDebut: Date, dateFin: Date, fraisDepot: Double, commission: Double, statutSession: String) {
+        self.id = id
+        self.dateDebut = dateDebut
+        self.dateFin = dateFin
+        self.fraisDepot = fraisDepot
+        self.commission = commission
+        self.statutSession = statutSession
+        
     }
 
     init(from decoder: Decoder) throws {
@@ -51,6 +63,9 @@ struct Session: Codable, Identifiable {
         // Frais de dépôt
         self.fraisDepot = try container.decode(Double.self, forKey: .fraisDepot)
 
+        // Commission
+        self.commission = try container.decode(Double.self, forKey: .commission)
+        
         // Statut
         self.statutSession = try container.decode(String.self, forKey: .statutSession)
     }
