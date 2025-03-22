@@ -1,0 +1,6 @@
+framework module Pods_FestiMobile_FestiMobileUITests {
+  umbrella header "Pods-FestiMobile-FestiMobileUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

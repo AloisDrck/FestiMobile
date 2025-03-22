@@ -51,6 +51,7 @@ class SessionService: ObservableObject {
         }.resume()
     }
 
+
     func fetchAllSessions() -> AnyPublisher<[Session], Error> {
         guard let url = URL(string: apiUrl) else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()

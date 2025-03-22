@@ -12,7 +12,7 @@ import SwiftUI
 struct FestiMobileApp: App {
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            RootView()
         }
     }
 }

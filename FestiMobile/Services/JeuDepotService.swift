@@ -66,7 +66,7 @@ class JeuDepotService: ObservableObject {
     }
     
     func fetchJeuxDepotByUserId(userId: String, completion: @escaping ([JeuDepot]) -> Void) {
-        guard let url = URL(string: "https://festivawin-back-16b79a35ef75.herokuapp.com/api/jeuDepot/user/\(userId)") else { return }
+        guard let url = URL(string: "\(baseURL)/user/\(userId)") else { return }
 
         URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data, error == nil else {
@@ -112,5 +112,105 @@ class JeuDepotService: ObservableObject {
             }
         }.resume()
     }
+    
+    func createJeuDepot(jeuDepot: JeuDepot, completion: @escaping (Result<JeuDepot, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)") else {
+            completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            let jsonData = try JSONEncoder().encode(jeuDepot)
+            request.httpBody = jsonData
+        } catch {
+            completion(.failure(error))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "Données manquantes", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let decodedData = try JSONDecoder().decode(JeuDepot.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(decodedData))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
 
+    func updateJeuDepot(jeuId: String, updates: [String: Any], completion: @escaping (Result<JeuDepot, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/\(jeuId)") else {
+            completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: updates, options: [])
+            request.httpBody = jsonData
+        } catch {
+            completion(.failure(error))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "Données manquantes", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let decodedData = try JSONDecoder().decode(JeuDepot.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(decodedData))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
+    
+    func deleteJeuDepot(jeuId: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/\(jeuId)") else {
+            completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        
+        URLSession.shared.dataTask(with: request) { _, _, error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                DispatchQueue.main.async {
+                    completion(.success(()))
+                }
+            }
+        }.resume()
+    }
 }

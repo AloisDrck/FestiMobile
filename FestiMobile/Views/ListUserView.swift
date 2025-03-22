@@ -14,8 +14,6 @@ struct ListUserView: View {
     @State private var showDeleteConfirmation = false
     @State private var utilisateurASupprimer: Utilisateur?
     @State private var indexASupprimer: IndexSet?
-    @State private var utilisateurTemporaire: Utilisateur?
-    @State private var indexTemporaire: Int?
 
     
     var body: some View {
@@ -35,12 +33,34 @@ struct ListUserView: View {
                             VStack(alignment: .leading) {
                                 Text("\(utilisateur.nom) \(utilisateur.prenom)")
                                     .font(.headline)
+                                    .foregroundColor(.primary)
+                                    .padding(.bottom, 2)
                                 Text(utilisateur.mail)
                                     .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                    .padding(.bottom, 10)
                             }
-                            .padding()
                         }
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        .padding()
+                        .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
+                        .cornerRadius(12)
+                        .shadow(radius: 5)
+                        .padding(.vertical, 4)
+                        .swipeActions(edge: .trailing) {
+                            Button {
+                                let index = isAcheteur ?
+                                    viewModel.acheteurs.firstIndex(where: { $0.id == utilisateur.id }) :
+                                    viewModel.vendeurs.firstIndex(where: { $0.id == utilisateur.id })
+
+                                if let index = index {
+                                    showDeleteAlert(at: IndexSet([index]))
+                                }
+                            } label: {
+                                Label("Supprimer", systemImage: "trash.fill")
+                            }
+                            .tint(.red)
+                        }
+                        .swipeActions(edge: .leading) {
                             // Action qui se déclenche lorsque l'utilisateur glisse vers la droite
                             NavigationLink(destination: EditUserView(utilisateur: $utilisateur, viewModel: viewModel)) {
                                 Button {
@@ -53,7 +73,9 @@ struct ListUserView: View {
                     }
                     .onDelete(perform: showDeleteAlert)
                 }
+                .listStyle(PlainListStyle())
             }
+            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
             .onAppear {
                 // Chargement des utilisateurs selon s'il s'agit d'acheteurs ou de vendeurs
                 if isAcheteur {
@@ -66,17 +88,8 @@ struct ListUserView: View {
         .navigationTitle(isAcheteur ? "Liste des acheteurs" : "Liste des vendeurs")
         .alert("Supprimer cet utilisateur ?", isPresented: $showDeleteConfirmation) {
             Button("Annuler", role: .cancel) {
-                // Remet l'utilisateur dans la liste s'il a été supprimé localement
-                if let utilisateurTemp = utilisateurTemporaire, let index = indexTemporaire {
-                    if isAcheteur {
-                        viewModel.acheteurs.insert(utilisateurTemp, at: index)
-                    } else {
-                        viewModel.vendeurs.insert(utilisateurTemp, at: index)
-                    }
-                }
                 utilisateurASupprimer = nil
-                utilisateurTemporaire = nil
-                indexTemporaire = nil
+                indexASupprimer = nil
             }
             Button("Supprimer", role: .destructive) {
                 if let utilisateur = utilisateurASupprimer {
@@ -97,37 +110,28 @@ struct ListUserView: View {
             utilisateurASupprimer = isAcheteur ? viewModel.acheteurs[index] : viewModel.vendeurs[index]
             indexASupprimer = offsets
             
-            // Stocker temporairement l'utilisateur et l'index avant suppression locale
-            utilisateurTemporaire = utilisateurASupprimer
-            indexTemporaire = index
-            
-            // Supprimer localement pour l'effet instantané
-            if isAcheteur {
-                viewModel.acheteurs.remove(at: index)
-            } else {
-                viewModel.vendeurs.remove(at: index)
-            }
-            
             showDeleteConfirmation = true
         }
     }
-
     
     private func deleteUser(_ utilisateur: Utilisateur) {
-        viewModel.deleteUser(id: utilisateur.id) { success, error in
+        guard let utilisateurId = utilisateur.id else { return }
+        viewModel.deleteUser(id: utilisateurId) { success, error in
             DispatchQueue.main.async {
-                if !success, let utilisateurTemp = utilisateurTemporaire, let index = indexTemporaire {
-                    // Si la suppression échoue, on remet l'utilisateur dans la liste
-                    if isAcheteur {
-                        viewModel.acheteurs.insert(utilisateurTemp, at: index)
-                    } else {
-                        viewModel.vendeurs.insert(utilisateurTemp, at: index)
+                if success {
+                    // Suppression locale après la confirmation de la suppression réussie
+                    if let index = indexASupprimer?.first {
+                        if isAcheteur {
+                            viewModel.acheteurs.remove(at: index)
+                        } else {
+                            viewModel.vendeurs.remove(at: index)
+                        }
                     }
+                } else {
+                    // Affichage d'une erreur si la suppression échoue
                     viewModel.errorMessage = "Erreur : \(error?.localizedDescription ?? "Suppression échouée")"
                 }
                 utilisateurASupprimer = nil
-                utilisateurTemporaire = nil
-                indexTemporaire = nil
             }
         }
     }

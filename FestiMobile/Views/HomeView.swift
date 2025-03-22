@@ -11,6 +11,7 @@ struct HomeView: View {
     @StateObject private var viewModel = SessionViewModel()
     @State private var navigateToLogin: Bool = false
     @State private var navigateToMainApp: Bool = false
+    @State private var showLoginView = false
 
     var body: some View {
         NavigationStack {
@@ -21,8 +22,7 @@ struct HomeView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack {
-                    
-                    Spacer().frame(height: 100) // Pour que ça fasse jolk avec le background sinon cetait trop haut
+                    Spacer().frame(height: 100)
                     
                     if !viewModel.message.isEmpty {
                         Text(viewModel.message)
@@ -56,22 +56,27 @@ struct HomeView: View {
                             MainAppView()
                         }
                     }
-                    
-                    Button("Connexion") {
-                        navigateToLogin = true
-                    }
-                    .buttonStyle(.bordered)
-                    .padding()
-                    .navigationDestination(isPresented: $navigateToLogin) {
-                        LoginView() // Navigation vers LoginView quand navigateToLogin est true
-                    }
                 }
                 .padding()
                 .onAppear {
-                    viewModel.fetchSessionStatus() // Assurez-vous que les données sont chargées au début
+                    viewModel.fetchSessionStatus()
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showLoginView.toggle()
+                    }) {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+            .sheet(isPresented: $showLoginView) {
+                LoginView()
+            }
         }
-        .navigationTitle("Home")
     }
 }
