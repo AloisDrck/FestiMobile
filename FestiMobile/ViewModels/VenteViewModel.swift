@@ -11,6 +11,7 @@ import Combine
 class VenteViewModel: ObservableObject {
     @Published var ventes: [Vente] = []
     @Published var errorMessage: String? = nil
+    @Published var jeuxSelectionnes: [JeuDepot] = []
     private let utilisateurService = UtilisateurService() // Service pour récupérer les utilisateurs
     private let venteService = VenteService() // Service pour récupérer les ventes
 
@@ -67,7 +68,7 @@ class VenteViewModel: ObservableObject {
             }
         }
     }
-
+// Partie ZOlan
     func createVente(vente: Vente, jeuxVendus: [VenteJeu], completion: @escaping (Bool) -> Void) {
         venteService.createVente(vente: vente, jeuxVendus: jeuxVendus) { [weak self] result in
             DispatchQueue.main.async {
@@ -77,6 +78,7 @@ class VenteViewModel: ObservableObject {
                     completion(true)
                 case .failure(let error):
                     self?.errorMessage = "Erreur : \(error.localizedDescription)"
+                    print("Erreur lors de la création de la vente (VenteViewModel): \(error.localizedDescription)")
                     completion(false)
                 }
             }

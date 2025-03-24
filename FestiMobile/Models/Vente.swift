@@ -7,6 +7,12 @@
 
 import Foundation
 
+// Type intermediaire pour correspondre à la structure de la réponse du backend (message, vente)
+struct VenteResponse: Codable {
+    var message: String
+    var vente: Vente
+}
+
 struct Vente: Codable, Identifiable {
     var id: String
     var acheteur: String // ID Utilisateur
@@ -30,6 +36,19 @@ struct Vente: Codable, Identifiable {
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         return formatter
     }()
+    
+    init(id: String, acheteur: String, vendeur: String, commissionVente: Double, dateVente: Date, montantTotal: Double, acheteurNom: String? = nil, acheteurPrenom: String? = nil, vendeurNom: String? = nil, vendeurPrenom: String? = nil) {
+        self.id = id
+        self.acheteur = acheteur
+        self.vendeur = vendeur
+        self.commissionVente = commissionVente
+        self.dateVente = dateVente
+        self.montantTotal = montantTotal
+        self.acheteurNom = acheteurNom
+        self.acheteurPrenom = acheteurPrenom
+        self.vendeurNom = vendeurNom
+        self.vendeurPrenom = vendeurPrenom
+    }
     
     // Décodeur personnalisé qui utilise le dateFormatter pour décoder la date
     init(from decoder: Decoder) throws {

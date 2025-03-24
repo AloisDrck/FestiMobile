@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 class VenteService {
     private let baseURL = "https://festivawin-back-16b79a35ef75.herokuapp.com/api/vente"
@@ -19,8 +20,8 @@ class VenteService {
         let requestData: [String: Any] = [
             "acheteurId": vente.acheteur,
             "vendeurId": vente.vendeur,
-            "commissionVente": vente.commissionVente,
             "montantTotal": vente.montantTotal,
+            "commissionVente": vente.commissionVente,
             "jeuxVendus": jeuxVendus.map { jeu in
                 [
                     "idJeuDepot": jeu.idJeuDepot,
@@ -41,6 +42,18 @@ class VenteService {
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
+//            // Afficher les données brutes reçues pour déboguer
+//            if let responseString = String(data: data!, encoding: .utf8) {
+//                print("Réponse brute : \(responseString)")
+//            }
+//            
+            guard let httpResponse = response as? HTTPURLResponse, (httpResponse.statusCode == 200 || httpResponse.statusCode == 201) else {
+                let errorMessage = "Erreur HTTP: \(String(describing: response))"
+                print(errorMessage)
+                completion(.failure(NSError(domain: errorMessage, code: -1, userInfo: nil)))
+                return
+            }
+            
             if let error = error {
                 completion(.failure(error))
                 return
@@ -52,8 +65,9 @@ class VenteService {
             }
             
             do {
-                let venteResponse = try JSONDecoder().decode(Vente.self, from: data)
-                completion(.success(venteResponse))
+                // Décoder la réponse avec le type intermediaire
+                let venteResponse = try JSONDecoder().decode(VenteResponse.self, from: data)
+                completion(.success(venteResponse.vente)) // Retourner l'objet "vente" extrait de VenteResponse
             } catch {
                 completion(.failure(error))
             }

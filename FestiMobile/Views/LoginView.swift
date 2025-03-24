@@ -13,6 +13,8 @@ struct LoginView: View {
     
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     
+    @StateObject private var sessionViewModel = SessionViewModel()
+    
     var body: some View {
         NavigationStack {
             ZStack {
