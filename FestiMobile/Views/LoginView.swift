@@ -13,6 +13,8 @@ struct LoginView: View {
     @State private var navigateToAddUser: Bool = false
     @State private var navigateToSessions: Bool = false
     
+    @StateObject private var sessionViewModel = SessionViewModel()
+    
     var body: some View {
         NavigationView {
             ZStack{
