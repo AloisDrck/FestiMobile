@@ -142,9 +142,10 @@ struct PanierView: View {
     }
     
     private func finaliserAchat() {
+        guard let utilisateurId = utilisateur.id else { return }
         let vente = Vente(
             id: UUID().uuidString,
-            acheteur: utilisateur.id,
+            acheteur: utilisateurId,
             vendeur: jeuDepot.vendeur,
             commissionVente: 0.1, // TODO : mettre la commission correspondant à la session
             dateVente: Date(),
