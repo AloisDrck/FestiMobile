@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7C31FD7E2D91B18900B9C1C3 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 7C31FD7D2D91B18900B9C1C3 /* FSCalendar */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		7C93F9512D8186BA000641E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7C31FD7E2D91B18900B9C1C3 /* FSCalendar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +130,7 @@
 			);
 			name = FestiMobile;
 			packageProductDependencies = (
+				7C31FD7D2D91B18900B9C1C3 /* FSCalendar */,
 			);
 			productName = FestiMobile;
 			productReference = 7C93F9402D8186B9000641E2 /* FestiMobile.app */;
@@ -208,6 +214,9 @@
 			);
 			mainGroup = 7C93F9372D8186B9000641E2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7C41DAF32D91B12E00C1FB80 /* XCRemoteSwiftPackageReference "FSCalendar" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7C93F9412D8186B9000641E2 /* Products */;
 			projectDirPath = "";
@@ -410,10 +419,11 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 623K8JSNXL;
+				DEVELOPMENT_TEAM = 7UKS7W42WF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FestiMobile/Info.plist;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Cette application a besoin d'accéder à votre calendrier pour sélectionner des dates.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -424,7 +434,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zolangivre.FestiMobile;
+				PRODUCT_BUNDLE_IDENTIFIER = AloisCorp.FestiMobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -441,10 +451,11 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 623K8JSNXL;
+				DEVELOPMENT_TEAM = 7UKS7W42WF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FestiMobile/Info.plist;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Cette application a besoin d'accéder à votre calendrier pour sélectionner des dates.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -455,7 +466,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zolangivre.FestiMobile;
+				PRODUCT_BUNDLE_IDENTIFIER = AloisCorp.FestiMobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -575,6 +586,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7C41DAF32D91B12E00C1FB80 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7C31FD7D2D91B18900B9C1C3 /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7C41DAF32D91B12E00C1FB80 /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7C93F9382D8186B9000641E2 /* Project object */;
 }
