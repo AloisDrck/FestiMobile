@@ -9,79 +9,82 @@ import SwiftUI
 
 struct ListUserView: View {
     @StateObject private var viewModel = UtilisateurViewModel()
+    @StateObject private var adminviewModel = AdminViewModel()
     let isAcheteur: Bool
     
     @State private var showDeleteConfirmation = false
     @State private var utilisateurASupprimer: Utilisateur?
     @State private var indexASupprimer: IndexSet?
-
     
     var body: some View {
         NavigationView {
-            VStack {
-                // Affichage d'un message d'erreur si un problème survient
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
-                }
-                
-                // Affichage des utilisateurs avec ForEach
-                List {
-                    ForEach(isAcheteur ? $viewModel.acheteurs : $viewModel.vendeurs) { $utilisateur in
-                        NavigationLink(destination: UserDetailView(utilisateur: $utilisateur)) {
-                            VStack(alignment: .leading) {
-                                Text("\(utilisateur.nom) \(utilisateur.prenom)")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                    .padding(.bottom, 2)
-                                Text(utilisateur.mail)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .padding(.bottom, 10)
-                            }
-                        }
-                        .padding()
-                        .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
-                        .cornerRadius(12)
-                        .shadow(radius: 5)
-                        .padding(.vertical, 4)
-                        .swipeActions(edge: .trailing) {
-                            Button {
-                                let index = isAcheteur ?
-                                    viewModel.acheteurs.firstIndex(where: { $0.id == utilisateur.id }) :
-                                    viewModel.vendeurs.firstIndex(where: { $0.id == utilisateur.id })
-
-                                if let index = index {
-                                    showDeleteAlert(at: IndexSet([index]))
+            ZStack {
+                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom)
+                    .edgesIgnoringSafeArea(.all)
+                VStack {
+                    // Affichage d'un message d'erreur si un problème survient
+                    if let errorMessage = viewModel.errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .padding()
+                    }
+                    
+                    // Affichage des utilisateurs avec ForEach
+                    List {
+                        ForEach(isAcheteur ? $viewModel.acheteurs : $viewModel.vendeurs) { $utilisateur in
+                            NavigationLink(destination: UserDetailView(utilisateur: $utilisateur)) {
+                                VStack(alignment: .leading) {
+                                    Text("\(utilisateur.nom) \(utilisateur.prenom)")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                        .padding(.bottom, 2)
+                                    Text(utilisateur.mail)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                        .padding(.bottom, 10)
                                 }
-                            } label: {
-                                Label("Supprimer", systemImage: "trash.fill")
                             }
-                            .tint(.red)
-                        }
-                        .swipeActions(edge: .leading) {
-                            // Action qui se déclenche lorsque l'utilisateur glisse vers la droite
-                            NavigationLink(destination: EditUserView(utilisateur: $utilisateur, viewModel: viewModel)) {
-                                Button {
-                                } label: {
-                                    Label("Éditer", systemImage: "pencil")
+                            .padding()
+                            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
+                            .cornerRadius(12)
+                            .shadow(radius: 5)
+                            .padding(.vertical, 4)
+                            .swipeActions(edge: .trailing) {
+                                if adminviewModel.savedUsername == "admin" {
+                                    Button {
+                                        let index = isAcheteur ?
+                                        viewModel.acheteurs.firstIndex(where: { $0.id == utilisateur.id }) :
+                                        viewModel.vendeurs.firstIndex(where: { $0.id == utilisateur.id })
+                                        
+                                        if let index = index {
+                                            showDeleteAlert(at: IndexSet([index]))
+                                        }
+                                    } label: {
+                                        Label("Supprimer", systemImage: "trash.fill")
+                                    }
+                                    .tint(.red)
                                 }
-                                .tint(.blue)
+                            }
+                            .swipeActions(edge: .leading) {
+                                NavigationLink(destination: EditUserView(utilisateur: $utilisateur, viewModel: viewModel)) {
+                                    Button {
+                                    } label: {
+                                        Label("Éditer", systemImage: "pencil")
+                                    }
+                                    .tint(.blue)
+                                }
                             }
                         }
                     }
-                    .onDelete(perform: showDeleteAlert)
+                    .listStyle(PlainListStyle())
+                    .scrollContentBackground(.hidden)
                 }
-                .listStyle(PlainListStyle())
-            }
-            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
-            .onAppear {
-                // Chargement des utilisateurs selon s'il s'agit d'acheteurs ou de vendeurs
-                if isAcheteur {
-                    viewModel.fetchBuyers()
-                } else {
-                    viewModel.fetchSellers()
+                .onAppear {
+                    if isAcheteur {
+                        viewModel.fetchBuyers()
+                    } else {
+                        viewModel.fetchSellers()
+                    }
                 }
             }
         }

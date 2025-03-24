@@ -28,29 +28,27 @@ struct AdminView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack(spacing: 20) {
-                    if viewModel.getUserRole() == "Gestionnaire" {
-                        Button {
-                            navigateToBuyer = true
-                        } label: {
-                            Label("Acheter", systemImage: "cart.fill")
-                        }
-                        .buttonStyle(LargeButtonStyle(backgroundColor: .green))
-                        .navigationDestination(isPresented: $navigateToBuyer) {
-                            ListUserView(isAcheteur: true)
-                        }
-
-                        Button {
-                            navigateToSeller = true
-                        } label: {
-                            Label("Déposer", systemImage: "arrow.down.circle.fill")
-                        }
-                        .buttonStyle(LargeButtonStyle(backgroundColor: .blue))
-                        .navigationDestination(isPresented: $navigateToSeller) {
-                            ListUserView(isAcheteur: false)
-                        }
+                    Button {
+                        navigateToBuyer = true
+                    } label: {
+                        Label("Acheter", systemImage: "cart.fill")
                     }
-
-                    if viewModel.getUserRole() == "Admin" {
+                    .buttonStyle(LargeButtonStyle(backgroundColor: .green))
+                    .navigationDestination(isPresented: $navigateToBuyer) {
+                        ListUserView(isAcheteur: true)
+                    }
+                    
+                    Button {
+                        navigateToSeller = true
+                    } label: {
+                        Label("Déposer", systemImage: "arrow.down.circle.fill")
+                    }
+                    .buttonStyle(LargeButtonStyle(backgroundColor: .blue))
+                    .navigationDestination(isPresented: $navigateToSeller) {
+                        ListUserView(isAcheteur: false)
+                    }
+                    
+                    if viewModel.savedUsername == "admin" {
                         Button {
                             navigateToAddUser = true
                         } label: {
@@ -60,7 +58,7 @@ struct AdminView: View {
                         .navigationDestination(isPresented: $navigateToAddUser) {
                             AddUserView()
                         }
-
+                        
                         Button {
                             navigateToSessions = true
                         } label: {
@@ -74,9 +72,6 @@ struct AdminView: View {
                 }
                 .padding(.horizontal, 40)
                 .padding(.top, 100)
-                .onAppear {
-                    viewModel.userRole = viewModel.getUserRole()
-                }
             }
         }
         .navigationTitle("Dashboards")

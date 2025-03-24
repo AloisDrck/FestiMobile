@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import JWTDecode
 
 class AdminService {
     func login(username: String, password: String, completion: @escaping (Bool, String?, String?) -> Void) {
@@ -27,36 +26,29 @@ class AdminService {
                 return
             }
             
+            guard let response = response as? HTTPURLResponse else {
+                completion(false, "Réponse invalide", nil)
+                return
+            }
+            
+            if response.statusCode != 200 {
+                completion(false, "Erreur serveur (code \(response.statusCode))", nil)
+                return
+            }
+            
             guard let data = data else {
                 completion(false, "Aucune donnée reçue", nil)
                 return
             }
             
-            if let dataString = String(data: data, encoding: .utf8) {
-                print("Données reçues : \(dataString)")  // Affiche les données brutes
-            }
-            
             do {
+                
                 let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-                print("Réponse JSON : \(json ?? [:])")
                 
                 if let message = json?["message"] as? String, message == "Connexion réussie" {
-                    // Récupérer le jeton d'authentification
                     if let token = json?["token"] as? String {
-                        // Décoder le token pour récupérer le statut
-                        do {
-                            let jwt = try JWTDecode.decode(jwt: token)
-                            if let role = jwt.body["statut"] as? String {
-                                // Stocker le jeton et le rôle dans UserDefaults
-                                UserDefaults.standard.set(token, forKey: "authToken")
-                                UserDefaults.standard.set(role, forKey: "userStatus")
-                                completion(true, nil, role)
-                            } else {
-                                completion(false, "Statut manquant dans le token", nil)
-                            }
-                        } catch {
-                            completion(false, "Erreur de décodage du token", nil)
-                        }
+                        UserDefaults.standard.set(token, forKey: "authToken")
+                        completion(true, nil, nil)
                     } else {
                         completion(false, "Jeton manquant", nil)
                     }
@@ -66,7 +58,6 @@ class AdminService {
             } catch {
                 completion(false, "Erreur de parsing JSON", nil)
             }
-        }
+        }.resume()
     }
 }
-  

@@ -48,7 +48,7 @@ struct SellerDepotListView: View {
                             }
                             .padding()
                             .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
-                            .cornerRadius(12)
+                            .cornerRadius(15)
                             .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 5)
                             .padding(.bottom, 10)
                             .onTapGesture {
@@ -138,12 +138,10 @@ struct SellerDepotListView: View {
         viewModel.updateJeuDepot(jeuId: jeuId, updates: ["statutJeu": StatutJeu.disponible.rawValue]) { result in
             switch result {
             case .success(let updatedJeu):
-                // Le jeu a été restauré, mets à jour la liste
                 if let index = viewModel.jeux.firstIndex(where: { $0.id == jeuId }) {
                     viewModel.jeux[index] = updatedJeu
                 }
             case .failure(let error):
-                // Gérer l'erreur
                 print("Erreur de mise à jour : \(error.localizedDescription)")
             }
         }
@@ -153,10 +151,8 @@ struct SellerDepotListView: View {
         if let index = offsets.first {
             let jeu = viewModel.jeux[index]
             if jeu.statutJeu == .supprime {
-                // Restaurer le jeu
                 handleRestore(jeu: jeu)
             } else {
-                // Demander la confirmation pour marquer le jeu comme "supprimé"
                 jeuToUpdate = jeu
                 showDeleteConfirmation = true
             }

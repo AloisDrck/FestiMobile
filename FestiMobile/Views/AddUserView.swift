@@ -27,7 +27,7 @@ struct AddUserView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 10) {
                     // Section Informations personnelles
                     GroupBox {
                         VStack(spacing: 15) {
@@ -39,26 +39,21 @@ struct AddUserView: View {
                             CustomTextFieldView(placeholder: "Ville", text: $ville, icon: "building.fill")
                             CustomTextFieldView(placeholder: "Code Postal", text: $codePostal, icon: "map.fill", keyboardType: .numberPad)
                             CustomTextFieldView(placeholder: "Pays", text: $pays, icon: "globe")
-                        }
-                    }
-                    .padding()
-                    .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
-                    .cornerRadius(12)
-                    .shadow(radius: 5)
-                    .padding(.horizontal)
-                    
-                    // Section Rôle
-                    GroupBox {
-                        Picker("Rôle", selection: $role) {
-                            ForEach([RoleUtilisateur.acheteur, RoleUtilisateur.vendeur], id: \.self) { role in
-                                Text(role.rawValue).tag(role)
+                            GroupBox {
+                                Picker("Rôle", selection: $role) {
+                                    ForEach([RoleUtilisateur.acheteur, RoleUtilisateur.vendeur], id: \.self) { role in
+                                        Text(role.rawValue).tag(role)
+                                    }
+                                }
+                                .pickerStyle(SegmentedPickerStyle())
+                                .padding(.horizontal)
                             }
+                            .padding()
+                            .cornerRadius(12)
+                            .shadow(radius: 5)
                         }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding(.horizontal)
                     }
                     .padding()
-                    .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
                     .cornerRadius(12)
                     .shadow(radius: 5)
                     .padding(.horizontal)
@@ -75,7 +70,6 @@ struct AddUserView: View {
                             .shadow(radius: 10)
                     }
                     .padding(.horizontal)
-                    .padding(.top, 20)
                 }
                 .padding(.top, 20)
             }
