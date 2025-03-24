@@ -16,100 +16,63 @@ struct JeuDepotDetailView: View {
             VStack(spacing: 20) {
                 // Détails du jeu
                 VStack(alignment: .leading, spacing: 12) {
-                    Group {
-                        HStack {
-                            Text("Éditeur :")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text(jeu.editeurJeu)
+                    detailRow(title: "Nom :", value: jeu.nomJeu, valueColor: .primary)
+                    detailRow(title: "Éditeur :", value: jeu.editeurJeu, valueColor: .secondary)
+                    detailRow(title: "Prix :", value: String(format: "%.2f", jeu.prixJeu) + "€", valueColor: .green)
+                    detailRow(title: "Quantité disponible :", value: "\(jeu.quantiteJeuDisponible)", valueColor: .primary)
+                    detailRow(title: "Quantité vendue :", value: "\(jeu.quantiteJeuVendu)", valueColor: .primary)
+                    detailRow(title: "Statut :", value: jeu.statutJeu.rawValue, valueColor: jeu.statutJeu == .disponible ? .green : .red)
+                    
+                    // Date de dépôt
+                    HStack {
+                        Text("Date de dépôt :")
+                            .fontWeight(.semibold)
+                        Spacer()
+                        if let dateDepot = jeu.dateDepot {
+                            Text(dateDepot, formatter: dateFormatter)
                                 .foregroundColor(.secondary)
-                        }
-
-                        HStack {
-                            Text("Prix :")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text("\(jeu.prixJeu, specifier: "%.2f")€")
-                                .foregroundColor(.green)
-                        }
-
-                        HStack {
-                            Text("Quantité disponible :")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text("\(jeu.quantiteJeuDisponible)")
-                                .foregroundColor(.primary)
-                        }
-
-                        HStack {
-                            Text("Quantité vendue :")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text("\(jeu.quantiteJeuVendu)")
-                                .foregroundColor(.primary)
-                        }
-
-                        HStack {
-                            Text("Statut :")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text(jeu.statutJeu.rawValue)
-                                .foregroundColor(jeu.statutJeu == .disponible ? .green : .red)
-                        }
-
-                        HStack {
-                            Text("Date de dépôt :")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text(jeu.dateDepot, formatter: dateFormatter)
-                                .foregroundColor(.secondary)
-                        }
-
-                        HStack {
-                            Text("Frais de dépôt :")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text("\(jeu.fraisDepot, specifier: "%.2f")€")
-                                .foregroundColor(.blue)
-                        }
-
-                        HStack {
-                            Text("Remise sur dépôt :")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text("\(jeu.remiseDepot, specifier: "%.2f")%")
-                                .foregroundColor(.blue)
+                        } else {
+                            Text("Aucune date")
+                                .foregroundColor(.red)
                         }
                     }
                     .padding()
                     .background(Color.white)
                     .cornerRadius(10)
                     .shadow(radius: 5)
+                    
+                    detailRow(title: "Frais de dépôt :", value:String(format: "%.2f", jeu.fraisDepot) + "€", valueColor: .blue)
+                    detailRow(title: "Remise sur dépôt :", value: String(format: "%.2f", jeu.remiseDepot) + "%", valueColor: .blue)
                 }
                 .padding(.horizontal)
-
-                // Bouton Fermer
                 Spacer()
-                
-                Button("Fermer") {
-                    dismiss()
-                }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-                .padding(.horizontal)
             }
             .navigationTitle("Détails du jeu")
-            .background(Color.gray.opacity(0.1).edgesIgnoringSafeArea(.all))
+            .navigationBarTitleDisplayMode(.inline)
+            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
             .padding(.bottom)
         }
+    }
+    
+    private func detailRow(title: String, value: String, valueColor: Color) -> some View {
+        HStack {
+            Text(title)
+                .fontWeight(.semibold)
+                .foregroundColor(.primary)
+            Spacer()
+            Text(value)
+                .foregroundColor(valueColor)
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 5)
     }
 }
 
 private let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
-    formatter.dateStyle = .medium
-    formatter.timeStyle = .short
+    formatter.dateFormat = "dd/MM/yyyy"  // Format personnalisé JJ/MM/AAAA
     return formatter
 }()
+

@@ -134,24 +134,9 @@ struct MainAppView: View {
                         viewModel.fetchJeux()
                     }
                 }
-                .navigationTitle("Liste des jeux")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            navigateToLogin = true
-                        }) {
-                            Image("Button")
-                                .resizable()
-                                .frame(width: 32, height: 48)
-                        }
-                        .navigationDestination(isPresented: $navigateToLogin) {
-                            LoginView()
-                        }
-                    }
-                }
             }
         }
-        .navigationTitle("Jeux")
+        .navigationTitle("Liste des jeux")
     }
     
 }

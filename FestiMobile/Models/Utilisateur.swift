@@ -8,7 +8,7 @@
 import Foundation
 
 struct Utilisateur: Codable, Identifiable {
-    var id: String
+    var id: String?
     var nom: String
     var prenom: String
     var mail: String
@@ -26,8 +26,6 @@ struct Utilisateur: Codable, Identifiable {
 }
 
 enum RoleUtilisateur: String, Codable, CaseIterable {
-    case admin = "Admin"
     case vendeur = "Vendeur"
     case acheteur = "Acheteur"
-    case gestionnaire = "Gestionnaire"
 }

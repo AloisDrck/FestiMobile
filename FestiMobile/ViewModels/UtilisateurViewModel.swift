@@ -65,7 +65,12 @@ class UtilisateurViewModel: ObservableObject {
     }
 
     func updateUser(_ utilisateur: Utilisateur) {
-        service.updateUser(id: utilisateur.id, utilisateur: utilisateur) { success, error in
+        guard let userId = utilisateur.id else {
+            // Si l'ID est nul, retourne ou affiche un message d'erreur
+            self.errorMessage = "ID utilisateur manquant"
+            return
+        }
+        service.updateUser(id: userId, utilisateur: utilisateur) { success, error in
             DispatchQueue.main.async {
                 if success {
                     // Met à jour l'utilisateur dans la liste

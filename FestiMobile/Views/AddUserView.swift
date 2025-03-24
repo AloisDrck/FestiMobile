@@ -26,55 +26,70 @@ struct AddUserView: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("Informations personnelles")) {
-                    TextField("Nom", text: $nom)
-                    TextField("Prénom", text: $prenom)
-                    TextField("Email", text: $email)
-                        .keyboardType(.emailAddress)
-                    TextField("Téléphone", text: $telephone)
-                        .keyboardType(.phonePad)
-                    TextField("Adresse", text: $adresse)
-                    TextField("Ville", text: $ville)
-                    TextField("Code Postal", text: $codePostal)
-                        .keyboardType(.numberPad)
-                    TextField("Pays", text: $pays)
-                }
-                
-                Section(header: Text("Rôle")) {
-                    Picker("Rôle", selection: $role) {
-                        ForEach([RoleUtilisateur.vendeur, RoleUtilisateur.acheteur], id: \.self) { role in
-                            Text(role.rawValue).tag(role)
+            ScrollView {
+                VStack(spacing: 10) {
+                    // Section Informations personnelles
+                    GroupBox {
+                        VStack(spacing: 15) {
+                            CustomTextFieldView(placeholder: "Nom *", text: $nom, icon: "person.fill")
+                            CustomTextFieldView(placeholder: "Prénom *", text: $prenom, icon: "person.2.fill")
+                            CustomTextFieldView(placeholder: "Email *", text: $email, icon: "envelope.fill", keyboardType: .emailAddress)
+                            CustomTextFieldView(placeholder: "Téléphone", text: $telephone, icon: "phone.fill", keyboardType: .phonePad)
+                            CustomTextFieldView(placeholder: "Adresse", text: $adresse, icon: "house.fill")
+                            CustomTextFieldView(placeholder: "Ville", text: $ville, icon: "building.fill")
+                            CustomTextFieldView(placeholder: "Code Postal", text: $codePostal, icon: "map.fill", keyboardType: .numberPad)
+                            CustomTextFieldView(placeholder: "Pays", text: $pays, icon: "globe")
+                            GroupBox {
+                                Picker("Rôle", selection: $role) {
+                                    ForEach([RoleUtilisateur.acheteur, RoleUtilisateur.vendeur], id: \.self) { role in
+                                        Text(role.rawValue).tag(role)
+                                    }
+                                }
+                                .pickerStyle(SegmentedPickerStyle())
+                                .padding(.horizontal)
+                            }
+                            .padding()
+                            .cornerRadius(12)
+                            .shadow(radius: 5)
                         }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
+                    .cornerRadius(12)
+                    .shadow(radius: 5)
+                    .padding(.horizontal)
+                    
+                    // Ajouter l'utilisateur
+                    Button(action: saveUser) {
+                        Text("Ajouter l'utilisateur")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .cornerRadius(12)
+                            .shadow(radius: 10)
+                    }
+                    .padding(.horizontal)
                 }
-
-                
-                Button(action: saveUser) {
-                    Text("Ajouter l'utilisateur")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
+                .padding(.top, 20)
             }
+            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
             .alert(isPresented: $isShowingAlert) {
                 Alert(title: Text("Erreur"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
         }
         .navigationTitle("Ajouter un utilisateur")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     private func saveUser() {
         guard !nom.isEmpty, !prenom.isEmpty, !email.isEmpty else {
-            alertMessage = "Tous les champs doivent être remplis."
+            alertMessage = "Nom, prénom et email doivent être remplis."
             isShowingAlert = true
             return
         }
         
-        let newUser = Utilisateur(id: UUID().uuidString, nom: nom, prenom: prenom, mail: email, telephone: telephone, adresse: adresse, ville: ville, codePostal: codePostal, pays: pays, role: role)
+        let newUser = Utilisateur(nom: nom, prenom: prenom, mail: email, telephone: telephone, adresse: adresse, ville: ville, codePostal: codePostal, pays: pays, role: role)
         
         // Appel au ViewModel pour créer l'utilisateur
         viewModel.createUser(newUser)

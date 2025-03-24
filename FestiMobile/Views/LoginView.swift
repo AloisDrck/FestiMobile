@@ -2,96 +2,91 @@
 //  LoginView.swift
 //  FestiMobile
 //
-//  Created by Aloïs Drucké on 12/03/2025.
+//  Created by Zolan Givre on 22/03/2025.
 //
 
 import SwiftUI
 
 struct LoginView: View {
-    @State private var navigateToBuyer: Bool = false
-    @State private var navigateToSeller: Bool = false
-    @State private var navigateToAddUser: Bool = false
-    @State private var navigateToSessions: Bool = false
+    @StateObject private var viewModel = AdminViewModel()
+    @State private var isNavigatingToAdmin = false
+    
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     
     @StateObject private var sessionViewModel = SessionViewModel()
     
     var body: some View {
-        NavigationView {
-            ZStack{
-                Image("gestionnaireBackground")
-                    .resizable()
-                    .scaledToFill()
+        NavigationStack {
+            ZStack {
+                LinearGradient(gradient: Gradient(colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.3)]), startPoint: .top, endPoint: .bottom)
                     .edgesIgnoringSafeArea(.all)
                 
-                VStack(spacing: 20) { // Espacement entre les boutons
-                    Button("Acheter") {
-                        navigateToBuyer = true
-                    }
-                    .buttonStyle(LargeButtonStyle())
-                    .navigationDestination(isPresented: $navigateToBuyer) {
-                        ListUserView(isAcheteur: true)
-                    }
-
-                    Button("Déposer") {
-                        navigateToSeller = true
-                    }
-                    .buttonStyle(LargeButtonStyle())
-                    .navigationDestination(isPresented: $navigateToSeller) {
-                        ListUserView(isAcheteur: false)
-                    }
-
-                    // --------------------------------------------------------------
-                    // QUE POUR LES ADMINS
+                VStack(spacing: 20) {
+                    Text("Connexion")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.top, 50)
                     
-                    Button("Ajouter un utilisateur") {
-                        navigateToAddUser = true
+                    VStack(alignment: .leading, spacing: 15) {
+                        inputField(title: "Nom d'utilisateur", text: $viewModel.username)
+                        inputField(title: "Mot de passe", text: $viewModel.password, isSecure: true)
                     }
-                    .buttonStyle(LargeButtonStyle())
-                    .navigationDestination(isPresented: $navigateToAddUser) {
-                        AddUserView()
-                    }
-                    Button("Sessions") {
-                        navigateToSessions = true
-                    }
-                    .buttonStyle(SessionsButtonStyle())
-                    .navigationDestination(isPresented: $navigateToSessions) {
-                        SessionView()
+                    .padding(.horizontal, 40)
+                    
+                    if let errorMessage = viewModel.errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .font(.footnote)
+                            .padding(.top, 5)
                     }
                     
-                    // --------------------------------------------------------------
+                    Button(action: {
+                        viewModel.login { success in
+                            if success {
+                                isLoggedIn = true
+                                isNavigatingToAdmin = true
+                            }
+                        }
+                    }) {
+                        Text("Se connecter")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(10)
+                            .shadow(radius: 5)
+                    }
+                    .padding(.horizontal, 40)
                     
+                    Spacer()
                 }
-                .padding(.horizontal, 40)
+                .padding()
+            }
+            .navigationDestination(isPresented: $isNavigatingToAdmin) {
+                AdminView()
             }
         }
-        .navigationTitle("Gestionnaire")
     }
-}
-
-struct LargeButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.title)
-            .frame(maxWidth: .infinity, minHeight: 150)
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(15)
-            .padding(.horizontal, 20) // Marge horizontale pour que les boutons soient bien espacés
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0) // Effet de clic
-            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
-    }
-}
-
-struct SessionsButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.title)
-            .frame(maxWidth: .infinity, minHeight: 75)
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(15)
-            .padding(.horizontal, 20)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0) // Effet de clic
-            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+    
+    private func inputField(title: String, text: Binding<String>, isSecure: Bool = false) -> some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.white)
+            if isSecure {
+                SecureField(title, text: text)
+                    .padding()
+                    .background(Color.white.opacity(0.9))
+                    .cornerRadius(10)
+            } else {
+                TextField(title, text: text)
+                    .padding()
+                    .background(Color.white.opacity(0.9))
+                    .cornerRadius(10)
+            }
+        }
+        .padding(.horizontal)
     }
 }

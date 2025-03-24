@@ -8,7 +8,7 @@
 import Foundation
 
 // ViewModel pour interagir avec le BilanService et fournir des données formatées à la vue
-class BilanViewModel {
+class BilanViewModel: ObservableObject {
     
     private var bilans: [Bilan] = []
     

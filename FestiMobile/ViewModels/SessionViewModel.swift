@@ -14,6 +14,7 @@ class SessionViewModel: ObservableObject {
     @Published var countdownText: String = ""
     @Published var message: String = ""
     @Published var isSessionActive: Bool = false
+    @Published var session: Session?
     
     private var sessionService = SessionService()
     private var cancellables = Set<AnyCancellable>()
@@ -112,5 +113,22 @@ class SessionViewModel: ObservableObject {
     
     func fetchSessionStatus() {
         sessionService.fetchSessionStatus()
+    }
+    
+    func fetchSessionEnCours() {
+        sessionService.fetchSessionDetails() // Appelle la fonction pour récupérer la session en cours
+        
+        // Attends que la session soit mise à jour dans le service
+        sessionService.$session
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] session in
+                if let session = session, session.statutSession == "En Cours" {
+                    // Mettez à jour la session en cours ici
+                    self?.session = session
+                    self?.sessions = [session] // Tu peux aussi ajouter la session à la liste ou l'afficher différemment
+                    self?.message = "Une session est en cours"
+                }
+            }
+            .store(in: &cancellables)
     }
 }

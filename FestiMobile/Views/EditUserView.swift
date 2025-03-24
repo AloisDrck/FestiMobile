@@ -21,11 +21,10 @@ struct EditUserView: View {
     @State private var isShowingAlert = false
     @State private var alertMessage = ""
     
-    @Environment(\.dismiss) private var dismiss  // Permet de fermer la vue après l'édition
-    @ObservedObject var viewModel: UtilisateurViewModel  // ViewModel pour gérer les utilisateurs
-    @Binding var utilisateur: Utilisateur  // L'utilisateur à modifier
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var viewModel: UtilisateurViewModel
+    @Binding var utilisateur: Utilisateur
 
-    // Initialisation des propriétés @State à partir de l'utilisateur
     init(utilisateur: Binding<Utilisateur>, viewModel: UtilisateurViewModel) {
         self._utilisateur = utilisateur
         self._nom = State(initialValue: utilisateur.wrappedValue.nom)
@@ -43,44 +42,60 @@ struct EditUserView: View {
 
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("Informations personnelles")) {
-                    TextField("Nom", text: $nom)
-                    TextField("Prénom", text: $prenom)
-                    TextField("Email", text: $email)
-                        .keyboardType(.emailAddress)
-                    TextField("Téléphone", text: $telephone)
-                        .keyboardType(.phonePad)
-                    TextField("Adresse", text: $adresse)
-                    TextField("Ville", text: $ville)
-                    TextField("Code Postal", text: $codePostal)
-                        .keyboardType(.numberPad)
-                    TextField("Pays", text: $pays)
-                }
-                
-                Section(header: Text("Rôle")) {
-                    Picker("Rôle", selection: $role) {
-                        ForEach([RoleUtilisateur.vendeur, RoleUtilisateur.acheteur], id: \.self) { role in
-                            Text(role.rawValue).tag(role)
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Section Informations personnelles
+                    GroupBox {
+                        VStack(spacing: 15) {
+                            CustomTextFieldView(placeholder: "Nom", text: $nom, icon: "person.fill")
+                            CustomTextFieldView(placeholder: "Prénom", text: $prenom, icon: "person.2.fill")
+                            CustomTextFieldView(placeholder: "Email", text: $email, icon: "envelope.fill", keyboardType: .emailAddress)
+                            CustomTextFieldView(placeholder: "Téléphone", text: $telephone, icon: "phone.fill", keyboardType: .phonePad)
+                            CustomTextFieldView(placeholder: "Adresse", text: $adresse, icon: "house.fill")
+                            CustomTextFieldView(placeholder: "Ville", text: $ville, icon: "building.fill")
+                            CustomTextFieldView(placeholder: "Code Postal", text: $codePostal, icon: "map.fill", keyboardType: .numberPad)
+                            CustomTextFieldView(placeholder: "Pays", text: $pays, icon: "globe")
+                            GroupBox {
+                                Picker("Rôle", selection: $role) {
+                                    ForEach([RoleUtilisateur.acheteur, RoleUtilisateur.vendeur], id: \.self) { role in
+                                        Text(role.rawValue).tag(role)
+                                    }
+                                }
+                                .pickerStyle(SegmentedPickerStyle())
+                                .padding(.horizontal)
+                            }
+                            .padding()
+                            .cornerRadius(12)
+                            .shadow(radius: 5)
                         }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
+                    .cornerRadius(12)
+                    .shadow(radius: 5)
+                    .padding(.horizontal)
+                    
+                    // Enregistrer les modifications
+                    Button(action: saveUser) {
+                        Text("Enregistrer les modifications")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .cornerRadius(12)
+                            .shadow(radius: 10)
+                    }
+                    .padding(.horizontal)
                 }
-
-                Button(action: saveUser) {
-                    Text("Enregistrer les modifications")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
+                .padding(.top, 20)
             }
+            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
             .alert(isPresented: $isShowingAlert) {
                 Alert(title: Text("Erreur"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
         }
         .navigationTitle("Modifier l'utilisateur")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     // Fonction pour enregistrer les modifications

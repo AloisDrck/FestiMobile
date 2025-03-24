@@ -21,6 +21,7 @@ struct ListDetailView: View {
                         HStack {
                             Text("Date :")
                                 .fontWeight(.semibold)
+                                .foregroundColor(.primary)
                             Spacer()
                             Text(formattedDate(vente.dateVente))
                                 .foregroundColor(.secondary)
@@ -29,24 +30,31 @@ struct ListDetailView: View {
                         HStack {
                             Text("Montant total :")
                                 .fontWeight(.semibold)
+                                .foregroundColor(.primary)
                             Spacer()
                             Text(String(format: "%.2f €", vente.montantTotal))
                                 .foregroundColor(.green)
+                                .font(.title2)
+                                .fontWeight(.bold)
                         }
                         
                         if utilisateur.role == .vendeur {
                             HStack {
                                 Text("Commission :")
                                     .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
                                 Spacer()
                                 Text(String(format: "%.2f €", vente.commissionVente))
                                     .foregroundColor(.blue)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
                             }
                         }
                         
                         HStack {
                             Text("Acheteur :")
                                 .fontWeight(.semibold)
+                                .foregroundColor(.primary)
                             Spacer()
                             Text("\(vente.acheteurNom ?? "Inconnu") \(vente.acheteurPrenom ?? "")")
                                 .foregroundColor(.primary)
@@ -55,6 +63,7 @@ struct ListDetailView: View {
                         HStack {
                             Text("Vendeur :")
                                 .fontWeight(.semibold)
+                                .foregroundColor(.primary)
                             Spacer()
                             Text("\(vente.vendeurNom ?? "Inconnu") \(vente.vendeurPrenom ?? "")")
                                 .foregroundColor(.primary)
@@ -63,8 +72,8 @@ struct ListDetailView: View {
                     }
                     .padding()
                     .background(Color.white)
-                    .cornerRadius(8)
-                    .shadow(radius: 5)
+                    .cornerRadius(12)
+                    .shadow(color: .gray.opacity(0.3), radius: 5, x: 0, y: 5)
                     .padding(.horizontal)
                     
                     // Liste des jeux vendus
@@ -78,7 +87,7 @@ struct ListDetailView: View {
                             .padding()
                     } else {
                         List(viewModel.jeuxVendus) { jeu in
-                            VStack(alignment: .leading, spacing: 10) {
+                            VStack(alignment: .leading, spacing: 12) {
                                 HStack {
                                     if let nom = jeu.nomJeu {
                                         Text(nom)
@@ -86,12 +95,15 @@ struct ListDetailView: View {
                                             .foregroundColor(.primary)
                                     }
                                     Spacer()
+                                    Image(systemName: "gamecontroller")
+                                        .foregroundColor(.blue)
                                 }
                                 
                                 if let editeur = jeu.editeurJeu {
                                     HStack {
                                         Text("Editeur :")
                                             .fontWeight(.semibold)
+                                            .foregroundColor(.primary)
                                         Spacer()
                                         Text(editeur)
                                             .foregroundColor(.secondary)
@@ -101,6 +113,7 @@ struct ListDetailView: View {
                                 HStack {
                                     Text(utilisateur.role == .vendeur ? "Quantité vendue :" : "Quantité achetée :")
                                         .fontWeight(.semibold)
+                                        .foregroundColor(.primary)
                                     Spacer()
                                     Text("\(jeu.quantiteVendus)")
                                         .foregroundColor(.secondary)
@@ -110,33 +123,38 @@ struct ListDetailView: View {
                                     HStack {
                                         Text("Prix :")
                                             .fontWeight(.semibold)
+                                            .foregroundColor(.primary)
                                         Spacer()
                                         Text(String(format: "%.2f €", prix))
                                             .foregroundColor(.green)
+                                            .font(.title2)
+                                            .fontWeight(.bold)
                                     }
                                 }
                             }
                             .padding()
-                            .background(Color.white)
-                            .cornerRadius(8)
-                            .shadow(radius: 3)
-                            .padding(.bottom, 8)
+                            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
+                            .cornerRadius(12)
+                            .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 5)
+                            .padding(.bottom, 10)
                         }
                         .listStyle(PlainListStyle())
                     }
                 }
                 .padding(.top)
+                .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
             }
-            .background(Color.gray.opacity(0.1).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchJeuxVendus(idVente: vente.id)
             }
+            .navigationTitle("Détails de la vente")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .short
+        formatter.dateFormat = "dd/MM/yyyy"
         return formatter.string(from: date)
     }
 }
