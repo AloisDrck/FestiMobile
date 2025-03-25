@@ -11,4 +11,12 @@ Notre application repose sur un système de rôles bien défini. Les gestionnair
 Grâce à cette application, nous avons cherché à rendre le processus plus fluide, plus rapide et plus fiable, tant pour les organisateurs que pour les exposants et visiteurs. En combinant simplicité d’utilisation et fonctionnalités avancées, notre solution transforme la gestion des ventes de jeux en une expérience fluide et optimisée, garantissant ainsi un festival organisé, efficace et agréable pour tous.
 
 # Identifiants de connexion pour admin et gestionnaires
-Se référé à l'annexe du DAT.
+Identifiants admin :
+username: admin
+password: admin123
+
+Identifiants gestionnaire
+username: gestionnaire
+password: gestionnaire123
+
+# DRUCKE Alois / GIVRE Zolan #
