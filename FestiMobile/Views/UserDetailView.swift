@@ -122,7 +122,6 @@ struct UserDetailView: View {
         }
     }
     
-    // pour charger le bilan
     private func loadBilan() {
         if utilisateur.role == .vendeur {
             isLoading = true
@@ -141,7 +140,6 @@ struct UserDetailView: View {
         }
     }
     
-    // Composants réutilisables
     @ViewBuilder
     private func infoCard<Content: View>(title: String, @ViewBuilder content: @escaping () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -173,7 +171,7 @@ struct UserDetailView: View {
             Image(systemName: icon)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 50, height: 50)
+                .frame(width: 40, height: 40)
                 .padding(20)
                 .background(backgroundColor)
                 .foregroundColor(.white)
