@@ -15,7 +15,14 @@ class BilanService {
     
     private init() {}
     
-    // Récupérer tous les bilans
+    //    Récupère tous les bilans depuis l'API et retourne une liste de bilans ou une erreur en cas d'échec.
+    //
+    //    Entrées :
+    //    - completion (Closure) : retourne un résultat avec la liste des bilans ou une erreur.
+    //
+    //    Sorties :
+    //    - Succès : Liste de bilans.
+    //    - Échec : Retourne une erreur.
     func getBilans(completion: @escaping (Result<[Bilan], Error>) -> Void) {
         let url = URL(string: baseURL)!
         let request = URLRequest(url: url)
@@ -38,7 +45,15 @@ class BilanService {
         }.resume()
     }
     
-    // Récupérer un bilan par ID du vendeur
+    //    Récupère un bilan spécifique en fonction de l'ID du vendeur depuis l'API et retourne le bilan ou une erreur.
+    //
+    //    Entrées :
+    //    - vendeurId (String) : ID du vendeur dont on veut récupérer le bilan.
+    //    - completion (Closure) : retourne un résultat avec le bilan ou une erreur.
+    //
+    //    Sorties :
+    //    - Succès : Bilan du vendeur.
+    //    - Échec : Retourne une erreur.
     func getBilanById(vendeurId: String, completion: @escaping (Result<Bilan, Error>) -> Void) {
         let url = URL(string: "\(baseURL)/\(vendeurId)")!
         let request = URLRequest(url: url)
@@ -61,7 +76,21 @@ class BilanService {
         }.resume()
     }
     
-    // Mise à jour d'un bilan
+    //    Description :
+    //    Met à jour un bilan existant avec de nouvelles données (somme due, frais, commissions, gains) et retourne un message de succès ou une erreur.
+    //
+    //    Entrées :
+    //    - id (String) : ID du bilan à mettre à jour.
+    //    - vendeurId (String) : ID du vendeur associé.
+    //    - sommeDues (Double) : Montant des sommes dues.
+    //    - totalFrais (Double) : Montant des frais totaux.
+    //    - totalCommissions (Double) : Montant des commissions totales.
+    //    - gains (Double) : Montant des gains.
+    //    - completion (Closure) : retourne un message de succès ou une erreur.
+    //
+    //    Sorties :
+    //    - Succès : Message "Bilan modifié avec succès !".
+    //    - Échec : Retourne une erreur.
     func updateBilan(id: String, vendeurId: String, sommeDues: Double, totalFrais: Double, totalCommissions: Double, gains: Double, completion: @escaping (Result<String, Error>) -> Void) {
         let url = URL(string: "\(baseURL)/\(id)")!
         var request = URLRequest(url: url)
@@ -93,7 +122,15 @@ class BilanService {
         }.resume()
     }
     
-    // Suppression d'un bilan
+    //    Supprime un bilan en fonction de son ID et retourne un message de succès ou une erreur.
+    //
+    //    Entrées :
+    //    - id (String) : ID du bilan à supprimer.
+    //    - completion (Closure) : retourne un message de succès ou une erreur.
+    //
+    //    Sorties :
+    //    - Succès : Message "Bilan supprimé !".
+    //    - Échec : Retourne une erreur.
     func deleteBilan(id: String, completion: @escaping (Result<String, Error>) -> Void) {
         let url = URL(string: "\(baseURL)/\(id)")!
         var request = URLRequest(url: url)

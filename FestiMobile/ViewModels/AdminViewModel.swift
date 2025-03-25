@@ -25,6 +25,13 @@ class AdminViewModel: ObservableObject {
         }
     }
     
+//    Connexion de d'un administrateur ou d'un gestionnaire.
+//    Entrées :
+//    - completion (Closure) : Retourne un Booléen (`true` si la connexion est réussie, sinon `false`) et met à jour l'état d'authentification de l'utilisateur.
+//
+//    Sorties :
+//    - Succès : L'utilisateur est connecté avec succès, l'état `isLoggedIn` est mis à `true` et le nom d'utilisateur est enregistré dans `savedUsername`.
+//    - Échec : L'état d'authentification échoue et un message d'erreur est affiché. Le message d'erreur peut être personnalisé ou par défaut `"Erreur inconnue"`.
     func login(completion: @escaping (Bool) -> Void) {
         adminService.login(username: username, password: password) { success, message, user in
             DispatchQueue.main.async {
@@ -40,6 +47,12 @@ class AdminViewModel: ObservableObject {
         }
     }
     
+//    Déconnexion de l'administrateur.
+//    Entrées :
+//    - Aucun paramètre requis.
+//
+//    Sorties :
+//    - L'utilisateur est déconnecté, l'état `isLoggedIn` est mis à `false`, et les informations d'identification (nom d'utilisateur et mot de passe) sont effacées.
     func logout() {
         self.isLoggedIn = false
         self.savedUsername = ""

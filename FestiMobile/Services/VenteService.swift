@@ -11,6 +11,15 @@ import Combine
 class VenteService {
     private let baseURL = "https://festivawin-back-16b79a35ef75.herokuapp.com/api/vente"
     
+//    Créer une vente.
+//    Entrées :
+//    - vente (Vente) : L'objet de vente à créer.
+//    - jeuxVendus ([VenteJeu]) : Liste des jeux vendus associés à la vente.
+//    - completion (Closure) : Retourne une réponse (`Vente`) en cas de succès ou une erreur (`Error`).
+//
+//    Sorties :
+//    - Succès : Retourne l'objet `Vente` créé.
+//    - Échec : Retourne une erreur (`Error`), incluant des erreurs liées à la création de la vente ou à la sérialisation des données.
     func createVente(vente: Vente, jeuxVendus: [VenteJeu], completion: @escaping (Result<Vente, Error>) -> Void) {
         guard let url = URL(string: baseURL) else {
             completion(.failure(NSError(domain: "URL invalide", code: -1, userInfo: nil)))
@@ -41,12 +50,7 @@ class VenteService {
             return
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-//            // Afficher les données brutes reçues pour déboguer
-//            if let responseString = String(data: data!, encoding: .utf8) {
-//                print("Réponse brute : \(responseString)")
-//            }
-//            
+        URLSession.shared.dataTask(with: request) { data, response, error in   
             guard let httpResponse = response as? HTTPURLResponse, (httpResponse.statusCode == 200 || httpResponse.statusCode == 201) else {
                 let errorMessage = "Erreur HTTP: \(String(describing: response))"
                 print(errorMessage)
@@ -74,6 +78,13 @@ class VenteService {
         }.resume()
     }
     
+//    Récupérer toutes les ventes.
+//    Entrées :
+//    - completion (Closure) : Retourne une liste de ventes (`[Vente]`) ou une erreur (`Error`).
+//
+//    Sorties :
+//    - Succès : Retourne une liste de ventes.
+//    - Échec : Retourne une erreur (`Error`), incluant des erreurs liées à la récupération des ventes.
     func getAllVentes(completion: @escaping (Result<[Vente], Error>) -> Void) {
         guard let url = URL(string: baseURL) else {
             completion(.failure(NSError(domain: "URL invalide", code: -1, userInfo: nil)))
@@ -100,6 +111,14 @@ class VenteService {
         }.resume()
     }
     
+//    Récupérer les ventes d'un acheteur donné par ID.
+//    Entrées :
+//    - acheteurId (String) : L'ID de l'acheteur pour lequel récupérer les ventes.
+//    - completion (Closure) : Retourne une liste de ventes (`[Vente]`) ou une erreur (`Error`).
+//
+//    Sorties :
+//    - Succès : Retourne une liste de ventes effectuées par l'acheteur.
+//    - Échec : Retourne une erreur (`Error`), incluant des erreurs liées à la récupération des ventes de l'acheteur.
     func getVentesByAcheteurId(acheteurId: String, completion: @escaping (Result<[Vente], Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)/acheteur/\(acheteurId)") else {
             completion(.failure(NSError(domain: "URL invalide", code: -1, userInfo: nil)))
@@ -126,6 +145,14 @@ class VenteService {
         }.resume()
     }
     
+//    Récupérer les ventes d'un vendeur donné par ID.
+//    Entrées :
+//    - vendeurId (String) : L'ID du vendeur pour lequel récupérer les ventes.
+//    - completion (Closure) : Retourne une liste de ventes (`[Vente]`) ou une erreur (`Error`).
+//
+//    Sorties :
+//    - Succès : Retourne une liste de ventes effectuées par le vendeur.
+//    - Échec : Retourne une erreur (`Error`), incluant des erreurs liées à la récupération des ventes du vendeur.
     func getVentesByVendeurId(vendeurId: String, completion: @escaping (Result<[Vente], Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)/vendeur/\(vendeurId)") else {
             completion(.failure(NSError(domain: "URL invalide", code: -1, userInfo: nil)))

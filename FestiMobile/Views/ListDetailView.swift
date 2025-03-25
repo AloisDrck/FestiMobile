@@ -86,69 +86,82 @@ struct ListDetailView: View {
                             .foregroundColor(.red)
                             .padding()
                     } else {
-                        List(viewModel.jeuxVendus) { jeu in
-                            VStack(alignment: .leading, spacing: 12) {
-                                HStack {
-                                    if let nom = jeu.nomJeu {
-                                        Text(nom)
-                                            .font(.headline)
-                                            .foregroundColor(.primary)
-                                    }
-                                    Spacer()
-                                    Image(systemName: "gamecontroller")
-                                        .foregroundColor(.blue)
-                                }
-                                
-                                if let editeur = jeu.editeurJeu {
+                        Section(header: Text("Jeux vendus lors de la vente")
+                            .font(.headline)
+                            .padding(.horizontal) ) {
+                            List(viewModel.jeuxVendus) { jeu in
+                                VStack(alignment: .leading, spacing: 12) {
                                     HStack {
-                                        Text("Editeur :")
+                                        if let nom = jeu.nomJeu {
+                                            Text(nom)
+                                                .font(.headline)
+                                                .foregroundColor(.primary)
+                                        }
+                                        Spacer()
+                                        Image(systemName: "gamecontroller")
+                                            .foregroundColor(.blue)
+                                    }
+                                    
+                                    if let editeur = jeu.editeurJeu {
+                                        HStack {
+                                            Text("Editeur :")
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(.primary)
+                                            Spacer()
+                                            Text(editeur)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                    
+                                    HStack {
+                                        Text(utilisateur.role == .vendeur ? "Quantité vendue :" : "Quantité achetée :")
                                             .fontWeight(.semibold)
                                             .foregroundColor(.primary)
                                         Spacer()
-                                        Text(editeur)
+                                        Text("\(jeu.quantiteVendus)")
                                             .foregroundColor(.secondary)
                                     }
-                                }
-                                
-                                HStack {
-                                    Text(utilisateur.role == .vendeur ? "Quantité vendue :" : "Quantité achetée :")
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(.primary)
-                                    Spacer()
-                                    Text("\(jeu.quantiteVendus)")
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                if let prix = jeu.prixJeu {
-                                    HStack {
-                                        Text("Prix :")
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(.primary)
-                                        Spacer()
-                                        Text(String(format: "%.2f €", prix))
-                                            .foregroundColor(.green)
-                                            .font(.title2)
-                                            .fontWeight(.bold)
+                                    
+                                    if let prix = jeu.prixJeu {
+                                        HStack {
+                                            Text("Prix :")
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(.primary)
+                                            Spacer()
+                                            Text(String(format: "%.2f €", prix))
+                                                .foregroundColor(.green)
+                                                .font(.title2)
+                                                .fontWeight(.bold)
+                                        }
                                     }
                                 }
+                                .cornerRadius(12)
+                                .padding(.bottom, 10)
                             }
-                            .padding()
-                            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
-                            .cornerRadius(12)
-                            .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 5)
-                            .padding(.bottom, 10)
                         }
-                        .listStyle(PlainListStyle())
                     }
                 }
                 .padding(.top)
-                .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
             }
             .onAppear {
                 viewModel.fetchJeuxVendus(idVente: vente.id)
             }
-            .navigationTitle("Détails de la vente")
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Détails de la vente")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                }
+            }
             .navigationBarTitleDisplayMode(.inline)
+            .background(
+                Image("popupBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+            )
         }
     }
 

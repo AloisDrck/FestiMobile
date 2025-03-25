@@ -5,7 +5,6 @@
 //  Created by Aloïs Drucké on 21/03/2025.
 //
 
-
 import SwiftUI
 
 struct PanierView: View {
@@ -13,15 +12,17 @@ struct PanierView: View {
     var jeuDepot: JeuDepot
     @StateObject private var panierViewModel = PanierViewModel()
     @StateObject private var jeuDepotViewModel = JeuDepotViewModel()
+    @StateObject private var sessionViewModel = SessionViewModel()
+    @StateObject private var bilanviewModel = BilanViewModel()
     
-    @State private var showError = false  // Pour afficher l'alerte d'erreur
-    @State private var showSuccess = false  // Pour afficher l'alerte de succès
-    @State private var errorMessage: String? // Le message d'erreur à afficher
-    @State private var successMessage: String? // Le message de succès à afficher
-    @Environment(\.dismiss) private var dismiss  // Pour revenir à la vue précédente
+    @State private var showError = false
+    @State private var showSuccess = false
+    @State private var errorMessage: String?
+    @State private var successMessage: String?
+    @Environment(\.dismiss) private var dismiss
     
     var jeuxMemeVendeur: [JeuDepot] {
-        jeuDepotViewModel.jeux.filter { $0.vendeur == jeuDepot.vendeur && $0.id != jeuDepot.id }
+        jeuDepotViewModel.jeux.filter { $0.vendeur == jeuDepot.vendeur }
     }
     
     var totalPanier: Double {
@@ -32,7 +33,6 @@ struct PanierView: View {
         NavigationStack {
             VStack {
                 List {
-                    // 🛒 Section : Jeux dans le panier
                     Section(header: Text("🛒 Votre panier").font(.headline)) {
                         ForEach(panierViewModel.jeuxDansPanier) { item in
                             if let jeuCorrespondant = jeuDepotViewModel.jeux.first(where: { $0.id == item.idJeuDepot }) {
@@ -57,22 +57,20 @@ struct PanierView: View {
                                     }
                                     .disabled(jeuCorrespondant.quantiteJeuDisponible == 0)
                                 }
-                                .padding()
-                                .background(Color(UIColor.systemGray6))
-                                .cornerRadius(10)
-                            }
-                        }
-                        .onDelete { indexSet in
-                            for index in indexSet {
-                                let jeu = panierViewModel.jeuxDansPanier[index]
-                                panierViewModel.retirerDuPanier(jeuId: jeu.idJeuDepot)
+                                .swipeActions {
+                                    Button(action: {
+                                        panierViewModel.retirerDuPanier(jeuId: item.idJeuDepot)
+                                    }) {
+                                        Label("Supprimer", systemImage: "trash")
+                                    }
+                                    .tint(.red)
+                                }
                             }
                         }
                     }
                     
-                    // 🎮 Section : Autres jeux du même vendeur
                     if !jeuxMemeVendeur.isEmpty {
-                        Section(header: Text("Autres jeux du même vendeur").font(.headline)) {
+                        Section(header: Text("Jeux du même vendeur").font(.headline)) {
                             ForEach(jeuxMemeVendeur) { jeu in
                                 HStack {
                                     VStack(alignment: .leading) {
@@ -88,10 +86,8 @@ struct PanierView: View {
                                             .foregroundColor(.blue)
                                             .padding()
                                     }
+                                    .disabled(panierViewModel.jeuxDansPanier.first(where: { $0.idJeuDepot == jeu.id })?.quantiteVendus ?? 0 >= jeu.quantiteJeuDisponible)
                                 }
-                                .padding()
-                                .background(Color(UIColor.systemGray6))
-                                .cornerRadius(10)
                             }
                         }
                     }
@@ -110,55 +106,136 @@ struct PanierView: View {
                                     .foregroundColor(.blue)
                             }
                             
-                            Button(action: finaliserAchat) {
+                            Button(action: {
+                                showSuccess.toggle()
+                            }) {
                                 Text("Valider l'achat")
-                                    .bold()
+                                    .font(.headline)
+                                    .foregroundColor(.white)
                                     .padding()
                                     .frame(maxWidth: .infinity)
-                                    .background(totalPanier > 0 ? Color.blue : Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
+                                    .background(Color.blue)
+                                    .cornerRadius(15)
+                                    .shadow(radius: 10)
                             }
                             .disabled(totalPanier == 0)
                         }
-                        .padding()
                     }
                 }
+                .cornerRadius(15)
+                .shadow(radius: 5)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
             }
             .navigationTitle("Panier")
+            .background(
+                Image("panierBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea(.all)
+            )
             .onAppear {
                 panierViewModel.ajouterAuPanier(jeu: jeuDepot)
-                jeuDepotViewModel.fetchJeux()
+                jeuDepotViewModel.fetchJeuxEnStock()
+                sessionViewModel.fetchSessionEnCours()
             }
             .alert(isPresented: $showError) {
                 Alert(title: Text("❌ Erreur"), message: Text(errorMessage ?? "Une erreur est survenue"), dismissButton: .default(Text("OK")))
             }
             .alert(isPresented: $showSuccess) {
-                Alert(title: Text("🎉 Succès"), message: Text(successMessage ?? "La vente a été créée avec succès."), dismissButton: .default(Text("OK")) {
-                    dismiss()  // Revenir à la vue précédente après l'alerte de succès
-                })
+                Alert(
+                    title: Text("Confirmer l'achat"),
+                    message: Text("Total de l'achat: \(totalPanier, specifier: "%.2f") €"),
+                    primaryButton: .destructive(Text("Confirmer")) {
+                        finaliserAchat()
+                    },
+                    secondaryButton: .cancel()
+                )
             }
         }
     }
     
     private func finaliserAchat() {
-        guard let utilisateurId = utilisateur.id else { return }
+        guard let utilisateurId = utilisateur.id else {
+            errorMessage = "Erreur: L'utilisateur n'a pas d'ID valide."
+            return
+        }
+        
+        guard let session = sessionViewModel.session else {
+            errorMessage = "Erreur: Aucune session en cours."
+            return
+        }
+        
+        let commision = (session.commission * totalPanier) / 100
+        
         let vente = Vente(
             id: UUID().uuidString,
             acheteur: utilisateurId,
             vendeur: jeuDepot.vendeur,
-            commissionVente: 0.1, // TODO : mettre la commission correspondant à la session
+            commissionVente: commision,
             dateVente: Date(),
             montantTotal: totalPanier
         )
         
         VenteViewModel().createVente(vente: vente, jeuxVendus: panierViewModel.jeuxDansPanier) { success in
             if success {
+                // Utilisation du ViewModel pour récupérer le bilan du vendeur
+                bilanviewModel.getBilanById(vendeurId: utilisateurId) { result in
+                    switch result {
+                    case .success(let bilan):
+                        // Mettre à jour le bilan avec les nouvelles valeurs
+                        guard let bilanId = bilan.id else {
+                            print("Erreur: Bilan sans Id")
+                            return
+                        }
+                        
+                        bilanviewModel.updateBilan(
+                            id: bilanId,
+                            vendeurId: bilan.vendeurId,
+                            sommeDues: bilan.sommeDues + commision,
+                            totalFrais: bilan.totalFrais,
+                            totalCommissions: bilan.totalCommissions + commision,
+                            gains: bilan.gains + totalPanier
+                        ) { updateResult in
+                            switch updateResult {
+                            case .success(let message):
+                                print("Bilan mis à jour: \(message)")
+                            case .failure(let error):
+                                print("Erreur lors de la mise à jour du bilan: \(error.localizedDescription)")
+                            }
+                        }
+                    case .failure(let error):
+                        print("Erreur lors de la récupération du bilan: \(error.localizedDescription)")
+                    }
+                }
+                for jeuPanier in panierViewModel.jeuxDansPanier {
+                    print(jeuPanier)
+                    jeuDepotViewModel.loadJeuDepotById(jeuId: jeuPanier.idJeuDepot) { jeu in
+                        guard let jeu = jeu else { return } // Vérifie que le jeu est bien chargé
+                        
+                        let nouvelleQuantiteDisponible = max(jeu.quantiteJeuDisponible - jeuPanier.quantiteVendus, 0)
+                        let nouvelleQuantiteVendue = jeu.quantiteJeuVendu + jeuPanier.quantiteVendus
+                        guard let jeuId = jeu.id else { return }
+                        jeuDepotViewModel.updateJeuDepot(
+                            jeuId: jeuId,
+                            updates: [
+                                "quantiteJeuDisponible": nouvelleQuantiteDisponible,
+                                "quantiteJeuVendu": nouvelleQuantiteVendue
+                            ]
+                        ) { result in
+                            switch result {
+                            case .success(let response):
+                                // Gère la réponse
+                                print("Mise à jour réussie: \(response)")
+                            case .failure(let error):
+                                // Gère l'erreur
+                                print("Erreur lors de la mise à jour: \(error.localizedDescription)")
+                            }
+                        }
+                    }
+                }
                 panierViewModel.jeuxDansPanier.removeAll()
-                jeuDepotViewModel.fetchJeux()
-                
                 successMessage = "Votre achat a bien été validé."
-                showSuccess = true
             } else {
                 errorMessage = "La vente n'a pas pu être créée."
                 showError = true

@@ -17,55 +17,56 @@ struct AddJeuView: View {
     @State private var quantite = ""
     @State private var remiseDepot = ""
     @State private var statutJeu: StatutJeu = .disponible
+    @State private var errorMessage: String?
     
     @StateObject private var viewModel = SessionViewModel()
     
-    @State private var errorMessage: String?
-    
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+        VStack(spacing: 20) {
+            Text("Ajouter un jeu")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .padding(.top, 40)
             
-            VStack(spacing: 20) {
-                Text("Ajouter un jeu")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .padding(.top, 40)
-                
-                inputField(title: "Nom du jeu", text: $nomJeu)
-                inputField(title: "Éditeur", text: $editeurJeu)
-                inputField(title: "Prix (€)", text: $prixJeu, keyboard: .decimalPad)
-                inputField(title: "Quantité", text: $quantite, keyboard: .numberPad)
-                inputField(title: "Remise (%)", text: $remiseDepot, keyboard: .decimalPad)
-                
-                if let error = errorMessage {
-                    Text(error)
-                        .foregroundColor(.red)
-                        .font(.caption)
-                }
-                
-                Button(action: ajouterJeu) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title)
-                        Text("Ajouter")
-                            .fontWeight(.bold)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-                    .shadow(radius: 5)
-                }
-                .padding(.horizontal)
-                
-                Spacer()
+            inputField(title: "Nom du jeu", text: $nomJeu)
+            inputField(title: "Éditeur", text: $editeurJeu)
+            inputField(title: "Prix (€)", text: $prixJeu, keyboard: .decimalPad)
+            inputField(title: "Quantité", text: $quantite, keyboard: .numberPad)
+            inputField(title: "Remise (%)", text: $remiseDepot, keyboard: .decimalPad)
+            
+            if let error = errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+                    .font(.caption)
             }
-            .padding()
+            
+            Button(action: ajouterJeu) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title)
+                    Text("Ajouter")
+                        .fontWeight(.bold)
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .cornerRadius(15)
+                .shadow(radius: 10)
+            }
+            .padding(.horizontal)
+            
+            Spacer()
         }
+        .padding()
+        .background(
+            Image("popupBackground")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea(.all)
+        )
         .onAppear {
             viewModel.fetchSessionEnCours()
         }

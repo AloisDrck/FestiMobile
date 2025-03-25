@@ -65,12 +65,12 @@ struct EditUserView: View {
                                 .padding(.horizontal)
                             }
                             .padding()
-                            .cornerRadius(12)
+                            .cornerRadius(15)
                             .shadow(radius: 5)
                         }
                     }
                     .padding()
-                    .cornerRadius(12)
+                    .cornerRadius(15)
                     .shadow(radius: 5)
                     .padding(.horizontal)
                     
@@ -82,14 +82,19 @@ struct EditUserView: View {
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color.blue)
-                            .cornerRadius(12)
+                            .cornerRadius(15)
                             .shadow(radius: 10)
                     }
                     .padding(.horizontal)
                 }
                 .padding(.top, 20)
             }
-            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
+            .background(
+                Image("generalBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+            )
             .alert(isPresented: $isShowingAlert) {
                 Alert(title: Text("Erreur"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }

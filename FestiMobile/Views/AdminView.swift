@@ -21,12 +21,18 @@ struct AdminView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Fond d'écran
-                Image("gestionnaireBackground")
-                    .resizable()
-                    .scaledToFill()
-                    .edgesIgnoringSafeArea(.all)
-                
+                if viewModel.savedUsername == "admin" {
+                    Image("adminBackground")
+                        .resizable()
+                        .scaledToFill()
+                        .edgesIgnoringSafeArea(.all)
+                } else {
+                    Image("gestionnaireBackground")
+                        .resizable()
+                        .scaledToFill()
+                        .edgesIgnoringSafeArea(.all)
+                }
+
                 VStack(spacing: 20) {
                     Button {
                         navigateToBuyer = true
@@ -92,7 +98,8 @@ struct AdminView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    isLoggedIn = false
+//                    isLoggedIn = false
+                    viewModel.logout()
                 }) {
                     Image(systemName: "power.circle.fill")
                         .foregroundColor(.red)

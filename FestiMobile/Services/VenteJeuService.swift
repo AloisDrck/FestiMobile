@@ -10,7 +10,14 @@ import Foundation
 class VenteJeuService {
     private let jeuDepotService = JeuDepotService()
     
-    // Récupérer les jeux vendus pour une vente donnée
+//    Récupérer les jeux vendus pour une vente donnée.
+//    Entrées :
+//    - idVente (String) : L'ID de la vente pour laquelle récupérer les jeux vendus.
+//    - completion (Closure) : Retourne un tableau de jeux vendus (`[VenteJeu]`) ou une erreur (`Error`).
+//
+//    Sorties :
+//    - Succès : Retourne un tableau de jeux vendus avec les détails des jeux (nom, éditeur, prix).
+//    - Échec : Retourne une erreur (`Error`), incluant des erreurs liées à la récupération des jeux ou à la récupération des détails du jeu.
     func getJeuxVendusByVenteId(idVente: String, completion: @escaping (Result<[VenteJeu], Error>) -> Void) {
         guard let url = URL(string: "https://festivawin-back-16b79a35ef75.herokuapp.com/api/venteJeu/\(idVente)") else {
             completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))

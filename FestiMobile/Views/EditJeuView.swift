@@ -10,53 +10,46 @@ import SwiftUI
 struct EditJeuView: View {
     @State var jeu: JeuDepot
     @ObservedObject var viewModel: JeuDepotViewModel
-    @Environment(\.dismiss) var dismiss  // Pour fermer le popup après la sauvegarde
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        ZStack {
-            // Dégradé de fond
-            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+        VStack(spacing: 20) {
+            Text("Modifier le Jeu")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .padding(.top, 40)
             
-            VStack(spacing: 20) {
-                Text("Modifier le Jeu")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .padding(.top, 40)
-                
-                // Champs de saisie stylisés
-                inputField(title: "Nom du jeu", text: $jeu.nomJeu)
-                inputField(title: "Éditeur", text: $jeu.editeurJeu)
-                
-                Button(action: {
-                    saveJeu()
-                }) {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.title)
-                        Text("Sauvegarder")
-                            .fontWeight(.bold)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-                    .shadow(radius: 5)
+            inputField(title: "Nom du jeu", text: $jeu.nomJeu)
+            inputField(title: "Éditeur", text: $jeu.editeurJeu)
+            
+            Button(action: {
+                saveJeu()
+            }) {
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title)
+                    Text("Sauvegarder")
+                        .fontWeight(.bold)
                 }
-                .padding(.horizontal)
-                
-                Spacer()
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+                .shadow(radius: 5)
             }
-            .padding()
-            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
-            .cornerRadius(20)
-            .shadow(radius: 10)
+            .padding(.horizontal)
+            
+            Spacer()
         }
-        .onAppear {
-            // Initialisation ou autres tâches si nécessaire
-        }
+        .padding()
+        .background(
+            Image("popupBackground")
+                .resizable()
+                .scaledToFill()
+                .edgesIgnoringSafeArea(.all)
+        )
     }
     
     private func inputField(title: String, text: Binding<String>) -> some View {

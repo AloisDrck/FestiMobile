@@ -47,9 +47,20 @@ struct JeuDepotDetailView: View {
                 .padding(.horizontal)
                 Spacer()
             }
-            .navigationTitle("Détails du jeu")
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Détails du jeux")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                }
+            }
             .navigationBarTitleDisplayMode(.inline)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
+            .background(
+                Image("popupBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+            )
             .padding(.bottom)
         }
     }

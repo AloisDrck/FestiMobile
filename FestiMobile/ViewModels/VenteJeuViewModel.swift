@@ -14,6 +14,15 @@ class VenteJeuViewModel: ObservableObject {
 
     private let service = VenteJeuService()
 
+    // Récupérer les jeux vendus par l'ID de la vente.
+    // Entrées :
+    // - idVente (String) : L'ID de la vente pour laquelle on souhaite récupérer les jeux vendus.
+    // - Aucun retour explicite, mais la liste `jeuxVendus` est mise à jour si la récupération réussit.
+    //
+    // Sorties :
+    // - Succès : La liste `jeuxVendus` est mise à jour avec les jeux vendus récupérés.
+    // - Échec : Un message d'erreur est stocké dans `errorMessage` si une erreur se produit. Si une erreur survient, le message d'erreur contient la description de l'erreur.
+
     func fetchJeuxVendus(idVente: String) {
         isLoading = true
         errorMessage = nil

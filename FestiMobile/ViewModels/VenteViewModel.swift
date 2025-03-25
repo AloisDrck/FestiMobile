@@ -12,10 +12,16 @@ class VenteViewModel: ObservableObject {
     @Published var ventes: [Vente] = []
     @Published var errorMessage: String? = nil
     @Published var jeuxSelectionnes: [JeuDepot] = []
-    private let utilisateurService = UtilisateurService() // Service pour récupérer les utilisateurs
-    private let venteService = VenteService() // Service pour récupérer les ventes
+    private let utilisateurService = UtilisateurService()
+    private let venteService = VenteService()
 
-    // Récupérer les ventes d'un vendeur ou acheteur
+    // Récupérer les ventes d'un utilisateur (vendeur ou acheteur) par son ID et son rôle.
+    // Entrées :
+    // - id (String) : L'ID de l'utilisateur (vendeur ou acheteur).
+    // - role (RoleUtilisateur) : Le rôle de l'utilisateur, soit vendeur, soit acheteur.
+    // Sorties :
+    // - Succès : La liste `ventes` est mise à jour avec les ventes récupérées pour cet utilisateur, et les noms des vendeurs et acheteurs sont assoc
+
     func fetchVentes(id: String, role: RoleUtilisateur) {
         if role == .vendeur {
             venteService.getVentesByVendeurId(vendeurId: id) { [weak self] result in
@@ -41,6 +47,14 @@ class VenteViewModel: ObservableObject {
             }
         }
     }
+
+    // Récupère tous les utilisateurs et met à jour les ventes avec les noms des vendeurs et des acheteurs.
+    // Entrées :
+    // - ventes ([Vente]) : Liste des ventes à mettre à jour avec les informations des utilisateurs.
+    // - role (RoleUtilisateur) : Le rôle de l'utilisateur (vendeur ou acheteur), utilisé pour déterminer le contexte, bien que ce paramètre ne soit pas directement utilisé dans la fonction.
+    // Sorties :
+    // - Succès : La liste `ventes` est mise à jour avec les noms des vendeurs et des acheteurs, extraits des utilisateurs récupérés.
+    // - Échec : Un message d'erreur est stocké dans `errorMessage` si une erreur se produit lors de la récupération des utilisateurs.
 
     private func fetchUtilisateursAndUpdateVentes(ventes: [Vente], role: RoleUtilisateur) {
         // Récupérer tous les utilisateurs
@@ -68,7 +82,16 @@ class VenteViewModel: ObservableObject {
             }
         }
     }
-// Partie ZOlan
+    
+    // Créer une nouvelle vente avec des jeux associés.
+    // Entrées :
+    // - vente (Vente) : La vente à créer, contenant les détails de la transaction.
+    // - jeuxVendus ([VenteJeu]) : La liste des jeux associés à la vente.
+    // - completion (Bool) : Un bloc de complétion qui est appelé avec un succès ou un échec de la création.
+    // Sorties :
+    // - Succès : La vente est ajoutée à la liste `ventes` si l'opération est réussie.
+    // - Échec : Un message d'erreur est stocké dans `errorMessage` si une erreur se produit lors de la création de la vente, et le bloc de complétion retourne `false`.
+
     func createVente(vente: Vente, jeuxVendus: [VenteJeu], completion: @escaping (Bool) -> Void) {
         venteService.createVente(vente: vente, jeuxVendus: jeuxVendus) { [weak self] result in
             DispatchQueue.main.async {
