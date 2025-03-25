@@ -7,12 +7,17 @@
 
 import Foundation
 
-// ViewModel pour interagir avec le BilanService et fournir des données formatées à la vue
 class BilanViewModel: ObservableObject {
     
     private var bilans: [Bilan] = []
     
-    // Récupérer tous les bilans
+//    Récupérer tous les bilans.
+//    Entrées :
+//    - completion (Closure) : Retourne un tableau de bilans en cas de succès ou une erreur en cas d'échec.
+//
+//    Sorties :
+//    - Succès : La liste des bilans est retournée à la vue.
+//    - Échec : Un message d'erreur est retourné en cas de problème avec la récupération des bilans.
     func getBilans(completion: @escaping (Result<[Bilan], Error>) -> Void) {
         BilanService.shared.getBilans { [weak self] result in
             switch result {
@@ -25,7 +30,14 @@ class BilanViewModel: ObservableObject {
         }
     }
     
-    // Récupérer un bilan spécifique par ID du vendeur
+//    Récupérer un bilan spécifique par ID du vendeur.
+//    Entrées :
+//    - vendeurId (String) : L'ID du vendeur pour lequel on souhaite récupérer le bilan.
+//    - completion (Closure) : Retourne le bilan correspondant en cas de succès ou une erreur en cas d'échec.
+//
+//    Sorties :
+//    - Succès : Le bilan du vendeur est retourné.
+//    - Échec : Un message d'erreur est retourné si le bilan n'est pas trouvé ou si une erreur survient.
     func getBilanById(vendeurId: String, completion: @escaping (Result<Bilan, Error>) -> Void) {
         BilanService.shared.getBilanById(vendeurId: vendeurId) { result in
             switch result {
@@ -37,7 +49,16 @@ class BilanViewModel: ObservableObject {
         }
     }
     
-    // Mettre à jour un bilan
+//    Mettre à jour un bilan.
+//    Entrées :
+//    - id (String) : L'ID du bilan à mettre à jour.
+//    - vendeurId (String) : L'ID du vendeur concerné.
+//    - sommeDues (Double), totalFrais (Double), totalCommissions (Double), gains (Double) : Les informations à mettre à jour dans le bilan.
+//    - completion (Closure) : Retourne un message de succès ou une erreur après la mise à jour.
+//
+//    Sorties :
+//    - Succès : Un message indiquant que la mise à jour a été effectuée avec succès.
+//    - Échec : Un message d'erreur si la mise à jour échoue.
     func updateBilan(id: String, vendeurId: String, sommeDues: Double, totalFrais: Double, totalCommissions: Double, gains: Double, completion: @escaping (Result<String, Error>) -> Void) {
         BilanService.shared.updateBilan(id: id, vendeurId: vendeurId, sommeDues: sommeDues, totalFrais: totalFrais, totalCommissions: totalCommissions, gains: gains) { result in
             switch result {
@@ -49,7 +70,14 @@ class BilanViewModel: ObservableObject {
         }
     }
     
-    // Supprimer un bilan
+//    Supprimer un bilan.
+//    Entrées :
+//    - id (String) : L'ID du bilan à supprimer.
+//    - completion (Closure) : Retourne un message de succès ou une erreur après la suppression.
+//
+//    Sorties :
+//    - Succès : Un message confirmant que le bilan a été supprimé avec succès.
+//    - Échec : Un message d'erreur si la suppression échoue.
     func deleteBilan(id: String, completion: @escaping (Result<String, Error>) -> Void) {
         BilanService.shared.deleteBilan(id: id) { result in
             switch result {
@@ -59,10 +87,5 @@ class BilanViewModel: ObservableObject {
                 completion(.failure(error))
             }
         }
-    }
-    
-    // Accéder à la liste des bilans
-    func getBilansList() -> [Bilan] {
-        return bilans
     }
 }

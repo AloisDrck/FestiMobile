@@ -103,11 +103,11 @@ struct UserDetailView: View {
                 HStack(spacing: 20) {
                     if utilisateur.role == .vendeur {
                         actionButton(icon: "gamecontroller.fill", backgroundColor: .blue, destination: SellerDepotListView(utilisateur: $utilisateur))
-                        actionButton(icon: "cart.fill", backgroundColor: .green, destination: ListView(utilisateur: $utilisateur))
+                        actionButton(icon: "list.bullet", backgroundColor: .green, destination: ListView(utilisateur: $utilisateur))
                         actionButton(icon: "arrow.down.circle.fill", backgroundColor: .purple, destination: DepotView(utilisateur: $utilisateur))
                     } else {
-                        actionButton(icon: "cart.fill", backgroundColor: .blue, destination: ListView(utilisateur: $utilisateur))
-                        actionButton(icon: "creditcard.fill", backgroundColor: .green, destination: AchatView(utilisateur: $utilisateur))
+                        actionButton(icon: "list.bullet", backgroundColor: .blue, destination: ListView(utilisateur: $utilisateur))
+                        actionButton(icon: "cart.fill", backgroundColor: .green, destination: AchatView(utilisateur: $utilisateur))
                     }
                 }
                 .padding(.top)
@@ -185,5 +185,4 @@ struct UserDetailView: View {
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal, 20)
     }
-
 }

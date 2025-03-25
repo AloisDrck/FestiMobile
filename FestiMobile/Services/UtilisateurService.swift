@@ -10,7 +10,14 @@ import Foundation
 class UtilisateurService {
     private let baseURL = "https://festivawin-back-16b79a35ef75.herokuapp.com/api/utilisateur"
     
-    // Récupérer tous les utilisateurs
+//    Récupérer tous les utilisateurs.
+//    Entrées :
+//    - Aucune entrée.
+//
+//    Sorties :
+//    - Succès : Retourne un tableau d'utilisateurs (`[Utilisateur]`).
+//    - Échec : Retourne une erreur (`Error`).
+
     func getAllUsers(completion: @escaping ([Utilisateur]?, Error?) -> Void) {
         guard let url = URL(string: baseURL) else { return }
         
@@ -34,7 +41,14 @@ class UtilisateurService {
         }.resume()
     }
 
-    // Récupérer tous les vendeurs
+//    Récupérer tous les vendeurs.
+//    Entrées :
+//    - Aucune entrée.
+//
+//    Sorties :
+//    - Succès : Retourne un tableau de vendeurs (`[Utilisateur]`).
+//    - Échec : Retourne une erreur (`Error`).
+
     func getAllSellers(completion: @escaping ([Utilisateur]?, Error?) -> Void) {
         guard let url = URL(string: "\(baseURL)/vendeurs") else {
             return
@@ -60,9 +74,14 @@ class UtilisateurService {
         }.resume()
     }
 
+//    Récupérer tous les acheteurs.
+//    Entrées :
+//    - Aucune entrée.
+//
+//    Sorties :
+//    - Succès : Retourne un tableau d'acheteurs (`[Utilisateur]`).
+//    - Échec : Retourne une erreur (`Error`).
 
-    
-    // Récupérer tous les acheteurs
     func getAllBuyers(completion: @escaping ([Utilisateur]?, Error?) -> Void) {
         guard let url = URL(string: "\(baseURL)/acheteurs") else { return }
         
@@ -86,7 +105,15 @@ class UtilisateurService {
         }.resume()
     }
     
-    // Récupérer un utilisateur par ID
+//    Récupérer un utilisateur par ID.
+//    Entrées :
+//    - id (String) : ID de l'utilisateur à récupérer.
+//    - completion (Closure) : Retourne l'utilisateur récupéré ou `nil` en cas d'erreur.
+//
+//    Sorties :
+//    - Succès : Retourne l'utilisateur correspondant à l'ID.
+//    - Échec : Retourne une erreur (`Error`).
+
     func getUserById(id: String, completion: @escaping (Utilisateur?, Error?) -> Void) {
         guard let url = URL(string: "\(baseURL)/\(id)") else { return }
         
@@ -110,7 +137,15 @@ class UtilisateurService {
         }.resume()
     }
     
-    // Créer un nouvel utilisateur
+//    Créer un nouvel utilisateur.
+//   Entrées :
+//   - utilisateur (Utilisateur) : L'utilisateur à créer.
+//   - completion (Closure) : Retourne un succès (true) ou une erreur (false) avec un message d'erreur si applicable.
+//
+//   Sorties :
+//   - Succès : Retourne `true`.
+//   - Échec : Retourne `false` avec un message d'erreur.
+
     func createUser(utilisateur: Utilisateur, completion: @escaping (Bool, Error?) -> Void) {
         guard let url = URL(string: baseURL) else { return }
         var request = URLRequest(url: url)
@@ -133,7 +168,16 @@ class UtilisateurService {
         }.resume()
     }
     
-    // Mettre à jour un utilisateur
+//    Mettre à jour un utilisateur.
+//    Entrées :
+//    - id (String) : ID de l'utilisateur à mettre à jour.
+//    - utilisateur (Utilisateur) : L'utilisateur avec les nouvelles données.
+//    - completion (Closure) : Retourne un succès (true) ou une erreur (false) avec un message d'erreur si applicable.
+//
+//    Sorties :
+//    - Succès : Retourne `true`.
+//    - Échec : Retourne `false` avec un message d'erreur.
+
     func updateUser(id: String, utilisateur: Utilisateur, completion: @escaping (Bool, Error?) -> Void) {
         guard let url = URL(string: "\(baseURL)/\(id)") else { return }
         var request = URLRequest(url: url)
@@ -156,7 +200,14 @@ class UtilisateurService {
         }.resume()
     }
     
-    // Supprimer un utilisateur
+//    Supprimer un utilisateur.
+//    Entrées :
+//    - id (String) : ID de l'utilisateur à supprimer.
+//    - completion (Closure) : Retourne un succès (true) ou une erreur (false) avec un message d'erreur si applicable.
+//
+//    Sorties :
+//    - Succès : Retourne `true`.
+//    - Échec : Retourne `false` avec un message d'erreur.
     func deleteUser(id: String, completion: @escaping (Bool, Error?) -> Void) {
         guard let url = URL(string: "\(baseURL)/\(id)") else { return }
         var request = URLRequest(url: url)

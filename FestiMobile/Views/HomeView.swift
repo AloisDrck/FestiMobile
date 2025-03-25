@@ -50,8 +50,12 @@ struct HomeView: View {
                         Button("Voir les jeux") {
                             navigateToMainApp = true
                         }
-                        .buttonStyle(.borderedProminent)
+                        .font(.headline)
+                        .foregroundColor(.white)
                         .padding()
+                        .background(Color.blue)
+                        .cornerRadius(15)
+                        .shadow(radius: 10)
                         .navigationDestination(isPresented: $navigateToMainApp) {
                             MainAppView()
                         }

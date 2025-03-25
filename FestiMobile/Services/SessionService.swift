@@ -14,6 +14,14 @@ class SessionService: ObservableObject {
 
     private let apiUrl = "https://festivawin-back-16b79a35ef75.herokuapp.com/api/session"
 
+//    Récupère le statut actif de la session.
+//   Entrées :
+//   - Aucune entrée.
+//
+//   Sorties :
+//   - Succès : Met à jour la variable `isActive` avec le statut de la session.
+//   - Échec : Affiche une erreur dans la console.
+
     func fetchSessionStatus() {
         guard let url = URL(string: "\(apiUrl)/activesession") else { return }
 
@@ -32,6 +40,13 @@ class SessionService: ObservableObject {
         }.resume()
     }
 
+//    Récupère les détails de la session active ou de la prochaine session en fonction du statut.
+//    Entrées :
+//    - Aucune entrée.
+//
+//    Sorties :
+//    - Succès : Met à jour la variable `session` avec les détails de la session active ou prochaine.
+//    - Échec : Affiche une erreur dans la console.
     func fetchSessionDetails() {
         let sessionUrl = isActive ? "\(apiUrl)/encours" : "\(apiUrl)/nextsession"
         
@@ -51,7 +66,13 @@ class SessionService: ObservableObject {
         }.resume()
     }
 
-
+//    Récupère toutes les sessions.
+//    Entrées :
+//    - Aucune entrée.
+//
+//    Sorties :
+//    - Succès : Retourne un tableau de sessions (`[Session]`).
+//    - Échec : Retourne une erreur.
     func fetchAllSessions() -> AnyPublisher<[Session], Error> {
         guard let url = URL(string: apiUrl) else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
@@ -63,6 +84,14 @@ class SessionService: ObservableObject {
             .eraseToAnyPublisher()
     }
     
+//    Supprime une session par son ID.
+//    Entrées :
+//    - id (String) : ID de la session à supprimer.
+//    - completion (Closure) : Retourne un succès (true) ou une erreur (false) selon le statut de la suppression.
+//
+//    Sorties :
+//    - Succès : Retourne `true`.
+//    - Échec : Retourne `false` avec un message d'erreur.
     func deleteSession(id: String, completion: @escaping (Bool) -> Void) {
         guard let url = URL(string: "\(apiUrl)/\(id)") else { return }
         
@@ -90,6 +119,15 @@ class SessionService: ObservableObject {
         }.resume()
     }
         
+//    Ajoute une nouvelle session.
+//    Entrées :
+//    - session (Session) : La session à ajouter.
+//    - completion (Closure) : Retourne un succès (true) ou une erreur (false) avec un message d'erreur si applicable.
+//
+//    Sorties :
+//    - Succès : Retourne `true` et `nil` (pour le message d'erreur).
+//    - Échec : Retourne `false` avec un message d'erreur.
+
     func addSession(_ session: Session, completion: @escaping (Bool, String?) -> Void) {
         guard let url = URL(string: apiUrl) else { return }
 
@@ -130,6 +168,14 @@ class SessionService: ObservableObject {
         }.resume()
     }
     
+//    Récupère une session par son ID.
+//    Entrées :
+//    - id (String) : ID de la session à récupérer.
+//    - completion (Closure) : Retourne la session récupérée ou `nil` en cas d'erreur.
+//
+//    Sorties :
+//    - Succès : Retourne une instance de `Session` si trouvée.
+//    - Échec : Retourne `nil` en cas d'erreur.
     func fetchSessionById(id: String, completion: @escaping (Session?) -> Void) {
         guard let url = URL(string: "\(apiUrl)/\(id)") else {
             completion(nil)

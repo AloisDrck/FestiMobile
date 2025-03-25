@@ -11,6 +11,14 @@ import Foundation
 class JeuDepotService: ObservableObject {
     private let baseURL = "https://festivawin-back-16b79a35ef75.herokuapp.com/api/jeuDepot"
 
+//    Récupère tous les objets `JeuDepot` depuis l'API et retourne une liste des jeux ou une erreur en cas d'échec.
+//
+//    Entrées :
+//    - completion (Closure) : retourne une liste d'objets `JeuDepot`.
+//
+//    Sorties :
+//    - Succès : Liste des objets `JeuDepot`.
+//    - Échec : Retourne une erreur.
     func fetchItems(completion: @escaping ([JeuDepot]) -> Void) {
         guard let url = URL(string: baseURL) else { return }
         
@@ -29,6 +37,18 @@ class JeuDepotService: ObservableObject {
         }.resume()
     }
     
+//    Filtre les objets `JeuDepot` selon les critères spécifiés : terme de recherche, prix minimum, prix maximum et disponibilité.
+//
+//    Entrées :
+//    - searchTerm (String) : Terme de recherche à appliquer sur les jeux.
+//    - minPrice (Double?) : Prix minimum des jeux.
+//    - maxPrice (Double?) : Prix maximum des jeux.
+//    - availability (String) : Filtre sur la disponibilité des jeux (Disponible / Vendu).
+//    - completion (Closure) : retourne la liste filtrée des jeux ou une erreur.
+//
+//    Sorties :
+//    - Succès : Liste des objets `JeuDepot` filtrés.
+//    - Échec : Retourne une erreur.
     func filterItems(searchTerm: String, minPrice: Double?, maxPrice: Double?, availability: String, completion: @escaping ([JeuDepot]) -> Void) {
         var urlComponents = URLComponents(string: "\(baseURL)/filter")
         
@@ -65,6 +85,15 @@ class JeuDepotService: ObservableObject {
         }.resume()
     }
     
+//    Récupère les objets `JeuDepot` associés à un utilisateur spécifique.
+//
+//    Entrées :
+//    - userId (String) : ID de l'utilisateur pour lequel on récupère les jeux déposés.
+//    - completion (Closure) : retourne la liste des jeux déposés ou une erreur.
+//
+//    Sorties :
+//    - Succès : Liste des objets `JeuDepot` de l'utilisateur.
+//    - Échec : Retourne une erreur.
     func fetchJeuxDepotByUserId(userId: String, completion: @escaping ([JeuDepot]) -> Void) {
         guard let url = URL(string: "\(baseURL)/user/\(userId)") else { return }
 
@@ -85,6 +114,15 @@ class JeuDepotService: ObservableObject {
         }.resume()
     }
     
+//    Récupère un objet `JeuDepot` spécifique en fonction de son ID.
+//
+//    Entrées :
+//    - jeuId (String) : ID du jeu à récupérer.
+//    - completion (Closure) : retourne l'objet `JeuDepot` ou une erreur.
+//
+//    Sorties :
+//    - Succès : Objet `JeuDepot`.
+//    - Échec : Retourne une erreur.
     func fetchJeuDepotById(jeuId: String, completion: @escaping (Result<JeuDepot, Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)/\(jeuId)") else {
             completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))
@@ -113,6 +151,15 @@ class JeuDepotService: ObservableObject {
         }.resume()
     }
     
+//    Crée un nouveau jeu dépôt avec les données fournies et retourne l'objet créé ou une erreur.
+//
+//    Entrées :
+//    - jeuDepot (JeuDepot) : Données du jeu à créer.
+//    - completion (Closure) : retourne l'objet `JeuDepot` créé ou une erreur.
+//
+//    Sorties :
+//    - Succès : Objet `JeuDepot` créé.
+//    - Échec : Retourne une erreur.
     func createJeuDepot(jeuDepot: JeuDepot, completion: @escaping (Result<JeuDepot, Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)") else {
             completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))
@@ -153,6 +200,16 @@ class JeuDepotService: ObservableObject {
         }.resume()
     }
 
+//    Met à jour un jeu dépôt existant en fonction des mises à jour fournies.
+//
+//    Entrées :
+//    - jeuId (String) : ID du jeu dépôt à mettre à jour.
+//    - updates (Dictionnaire [String: Any]) : Mises à jour des propriétés du jeu.
+//    - completion (Closure) : retourne l'objet mis à jour ou une erreur.
+//
+//    Sorties :
+//    - Succès : Objet `JeuDepot` mis à jour.
+//    - Échec : Retourne une erreur.
     func updateJeuDepot(jeuId: String, updates: [String: Any], completion: @escaping (Result<JeuDepot, Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)/\(jeuId)") else {
             completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))
@@ -193,7 +250,15 @@ class JeuDepotService: ObservableObject {
         }.resume()
     }
 
-    
+//    Supprime un jeu dépôt en fonction de son ID et retourne un succès ou une erreur.
+//
+//    Entrées :
+//    - jeuId (String) : ID du jeu dépôt à supprimer.
+//    - completion (Closure) : retourne un message de succès ou une erreur.
+//
+//    Sorties :
+//    - Succès : Aucun retour (vide).
+//    - Échec : Retourne une erreur.
     func deleteJeuDepot(jeuId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)/\(jeuId)") else {
             completion(.failure(NSError(domain: "URL invalide", code: 0, userInfo: nil)))

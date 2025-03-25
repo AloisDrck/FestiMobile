@@ -8,6 +8,18 @@
 import Foundation
 
 class AdminService {
+    
+
+    //    Envoie une requête de connexion à l'API avec le nom d'utilisateur et le mot de passe. Si la connexion est réussie, elle enregistre un jeton d'authentification. Sinon, elle retourne un message d'erreur.
+    //
+    //    Entrées :
+    //    - username (String)
+    //    - password (String)
+    //    - completion (Closure) : retourne un statut et un message.
+    //
+    //    Sorties :
+    //    - Succès : Enregistre un jeton.
+    //    - Échec : Retourne un message d'erreur.
     func login(username: String, password: String, completion: @escaping (Bool, String?, String?) -> Void) {
         guard let url = URL(string: "https://festivawin-back-16b79a35ef75.herokuapp.com/api/admin/login") else {
             completion(false, "URL invalide", nil)

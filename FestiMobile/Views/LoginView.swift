@@ -17,53 +17,54 @@ struct LoginView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.3)]), startPoint: .top, endPoint: .bottom)
-                    .edgesIgnoringSafeArea(.all)
+            VStack(spacing: 20) {
+                Text("Connexion")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding(.top, 50)
                 
-                VStack(spacing: 20) {
-                    Text("Connexion")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.top, 50)
-                    
-                    VStack(alignment: .leading, spacing: 15) {
-                        inputField(title: "Nom d'utilisateur", text: $viewModel.username)
-                        inputField(title: "Mot de passe", text: $viewModel.password, isSecure: true)
-                    }
-                    .padding(.horizontal, 40)
-                    
-                    if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.footnote)
-                            .padding(.top, 5)
-                    }
-                    
-                    Button(action: {
-                        viewModel.login { success in
-                            if success {
-                                isLoggedIn = true
-                                isNavigatingToAdmin = true
-                            }
-                        }
-                    }) {
-                        Text("Se connecter")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(10)
-                            .shadow(radius: 5)
-                    }
-                    .padding(.horizontal, 40)
-                    
-                    Spacer()
+                VStack(alignment: .leading, spacing: 15) {
+                    inputField(title: "Nom d'utilisateur", text: $viewModel.username)
+                    inputField(title: "Mot de passe", text: $viewModel.password, isSecure: true)
                 }
-                .padding()
+                .padding(.horizontal, 40)
+                
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                        .padding(.top, 5)
+                }
+                
+                Button(action: {
+                    viewModel.login { success in
+                        if success {
+                            isLoggedIn = true
+                            isNavigatingToAdmin = true
+                        }
+                    }
+                }) {
+                    Text("Se connecter")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                        .shadow(radius: 5)
+                }
+                .padding(.horizontal, 40)
+                
+                Spacer()
             }
+            .padding()
+            .background(
+                Image("popupBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea(.all)
+            )
             .navigationDestination(isPresented: $isNavigatingToAdmin) {
                 AdminView()
             }
