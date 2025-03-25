@@ -14,129 +14,133 @@ struct DepotView: View {
     
     @StateObject private var viewModel = JeuDepotViewModel()
     @StateObject private var bilanviewModel = BilanViewModel()
-
+    
     
     @State private var showConfirmationAlert = false
     @State private var totalFraisDepot: Double = 0.0
-
+    
     var body: some View {
-        NavigationView {
-            ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom)
-                    .edgesIgnoringSafeArea(.all)
-                VStack {
-                    if jeux.isEmpty {
-                        VStack {
-                            Image(systemName: "gamecontroller.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 100, height: 100)
-                                .foregroundColor(.gray)
-                                .padding()
-                            
-                            Text("Aucun jeu ajouté")
-                                .font(.title3)
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                    } else {
-                        List {
-                            ForEach(jeux) { jeu in
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text(jeu.nomJeu)
-                                        .font(.headline)
-                                        .foregroundColor(.blue)
-                                    
-                                    Text("Éditeur: \(jeu.editeurJeu)")
+        NavigationStack {
+            VStack {
+                if jeux.isEmpty {
+                    VStack {
+                        Image(systemName: "gamecontroller.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 100, height: 100)
+                            .foregroundColor(.gray)
+                            .padding()
+                        
+                        Text("Aucun jeu ajouté")
+                            .font(.title3)
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                } else {
+                    List {
+                        ForEach(jeux, id: \.nomJeu) { jeu in
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(jeu.nomJeu)
+                                    .font(.headline)
+                                    .foregroundColor(.blue)
+                                
+                                Text("Éditeur: \(jeu.editeurJeu)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                
+                                HStack {
+                                    Text("Prix: \(jeu.prixJeu, specifier: "%.2f") €")
                                         .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                        .bold()
                                     
-                                    HStack {
-                                        Text("Prix: \(jeu.prixJeu, specifier: "%.2f") €")
-                                            .font(.subheadline)
-                                            .bold()
-                                        
-                                        Spacer()
-                                        
-                                        Text("Quantité: \(jeu.quantiteJeuDisponible)")
-                                            .font(.subheadline)
-                                    }
-                                    HStack {
-                                        Text("Remise: \(jeu.remiseDepot, specifier: "%.2f") %")
-                                            .font(.subheadline)
-                                            .foregroundColor(.green)
-                                        
-                                        Spacer()
-                                        
-                                        Text("Frais: \(jeu.fraisDepot, specifier: "%.2f") €")
-                                            .font(.subheadline)
-                                            .foregroundColor(.red)
-                                        
-                                    }
+                                    Spacer()
+                                    
+                                    Text("Quantité: \(jeu.quantiteJeuDisponible)")
+                                        .font(.subheadline)
                                 }
-                                .padding()
-                                .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
-                                .cornerRadius(10)
-                                .shadow(radius: 2)
-                                .padding(.vertical, 4)
+                                HStack {
+                                    Text("Remise: \(jeu.remiseDepot, specifier: "%.2f") %")
+                                        .font(.subheadline)
+                                        .foregroundColor(.green)
+                                    
+                                    Spacer()
+                                    
+                                    Text("Frais: \(jeu.fraisDepot, specifier: "%.2f") €")
+                                        .font(.subheadline)
+                                        .foregroundColor(.red)
+                                    
+                                }
                             }
-                            .onDelete(perform: supprimerJeu)
                         }
+                        .onDelete(perform: supprimerJeu)
+                    }
+                    .onAppear {
+                        print("Jeux mis à jour : \(jeux)")
+                    }
+                    .cornerRadius(15)
+                    .shadow(radius: 5)
+                    .scrollContentBackground(.hidden)
+                    .background(Color.clear)
+                }
+                
+                HStack(spacing: 20) {
+                    Button(action: {
+                        showAjouterJeuView.toggle()
+                    }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Ajouter un jeu")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(15)
+                        .shadow(radius: 10)
                     }
                     
-                    Divider()
-                    
-                    HStack(spacing: 20) {
+                    if !jeux.isEmpty {
                         Button(action: {
-                            showAjouterJeuView.toggle()
+                            totalFraisDepot = jeux.reduce(0) { $0 + $1.fraisDepot }
+                            showConfirmationAlert.toggle()
                         }) {
                             HStack {
-                                Image(systemName: "plus.circle.fill")
-                                Text("Ajouter un jeu")
+                                Image(systemName: "checkmark.circle.fill")
+                                Text("Confirmer")
                             }
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Color.green)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                         }
-                        
-                        if !jeux.isEmpty {
-                            Button(action: {
-                                totalFraisDepot = jeux.reduce(0) { $0 + $1.fraisDepot }
-                                showConfirmationAlert.toggle()
-                            }) {
-                                HStack {
-                                    Image(systemName: "checkmark.circle.fill")
-                                    Text("Confirmer")
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.green)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                            }
-                        }
                     }
-                    .padding()
                 }
-                .sheet(isPresented: $showAjouterJeuView) {
-                    AddJeuView(jeux: $jeux, utilisateur: $utilisateur)
-                }
-                
-                .alert(isPresented: $showConfirmationAlert) {
-                    Alert(
-                        title: Text("Confirmer le dépôt"),
-                        message: Text("Frais totaux des jeux déposés: \(totalFraisDepot, specifier: "%.2f") €"),
-                        primaryButton: .destructive(Text("Confirmer")) {
-                            confirmerDepot()
-                        },
-                        secondaryButton: .cancel()
-                    )
-                }
+                .padding()
             }
+            .sheet(isPresented: $showAjouterJeuView) {
+                AddJeuView(jeux: $jeux, utilisateur: $utilisateur)
+            }
+            
+            .alert(isPresented: $showConfirmationAlert) {
+                Alert(
+                    title: Text("Confirmer le dépôt"),
+                    message: Text("Frais totaux des jeux déposés: \(totalFraisDepot, specifier: "%.2f") €"),
+                    primaryButton: .destructive(Text("Confirmer")) {
+                        confirmerDepot()
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+            .background(
+                Image("generalBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+            )
         }
-        .navigationTitle("Dépôt de Jeux")
+        .navigationTitle("Dépôt de jeux")
     }
 
     private func supprimerJeu(at offsets: IndexSet) {

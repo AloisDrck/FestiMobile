@@ -96,4 +96,17 @@ class UtilisateurViewModel: ObservableObject {
             }
         }
     }
+    
+    func getUserById(id: String, completion: @escaping (Utilisateur?, Error?) -> Void) {
+        service.getUserById(id: id) { utilisateur, error in
+            DispatchQueue.main.async {
+                if let utilisateur = utilisateur {
+                    completion(utilisateur, nil)
+                } else if let error = error {
+                    self.errorMessage = error.localizedDescription
+                    completion(nil, error)
+                }
+            }
+        }
+    }
 }

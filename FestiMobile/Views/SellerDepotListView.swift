@@ -29,69 +29,65 @@ struct SellerDepotListView: View {
                         .padding()
                 } else {
                     List {
-                        ForEach(viewModel.jeux, id: \.id) { jeu in
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(jeu.nomJeu)
-                                        .font(.headline)
+                        Section(header: Text("Jeux déposés").font(.headline)) {
+                            ForEach(viewModel.jeux, id: \.id) { jeu in
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text(jeu.nomJeu)
+                                            .font(.headline)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.primary)
+                                        Text("Prix: \(jeu.prixJeu, specifier: "%.2f")€")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .italic()
+                                    }
+                                    Spacer()
+                                    Text(jeu.statutJeu.rawValue)
+                                        .foregroundColor(jeu.statutJeu == .disponible ? .green : .red)
                                         .fontWeight(.bold)
-                                        .foregroundColor(.primary)
-                                    Text("Prix: \(jeu.prixJeu, specifier: "%.2f")€")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                        .italic()
                                 }
-                                Spacer()
-                                Text(jeu.statutJeu.rawValue)
-                                    .foregroundColor(jeu.statutJeu == .disponible ? .green : .red)
-                                    .fontWeight(.bold)
-                            }
-                            .padding()
-                            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
-                            .cornerRadius(15)
-                            .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 5)
-                            .padding(.bottom, 10)
-                            .onTapGesture {
-                                selectedJeu = jeu
-                                showPopup = true
-                            }
-                            // Swipe actions
-                            .swipeActions(edge: .trailing) {
-                                if jeu.statutJeu == .supprime {
-                                    // Action de restauration
+                                .onTapGesture {
+                                    selectedJeu = jeu
+                                    showPopup = true
+                                }
+                                .swipeActions(edge: .trailing) {
+                                    if jeu.statutJeu == .supprime {
+                                        Button(action: {
+                                            handleRestore(jeu: jeu)
+                                        }) {
+                                            Label("Restaurer", systemImage: "plus.circle.fill")
+                                        }
+                                        .tint(.blue)
+                                    } else {
+                                        Button(action: {
+                                            jeuToUpdate = jeu
+                                            showDeleteConfirmation = true
+                                        }) {
+                                            Label("Supprimer", systemImage: "trash.fill")
+                                        }
+                                        .tint(.red)
+                                    }
+                                }
+                                .swipeActions(edge: .leading) {
                                     Button(action: {
-                                        handleRestore(jeu: jeu)
+                                        jeuToEdit = jeu
+                                        showEditPopup = true
                                     }) {
-                                        Label("Restaurer", systemImage: "plus.circle.fill")
+                                        Label("Éditer", systemImage: "pencil")
                                     }
                                     .tint(.blue)
-                                } else {
-                                    // Action de suppression
-                                    Button(action: {
-                                        jeuToUpdate = jeu
-                                        showDeleteConfirmation = true
-                                    }) {
-                                        Label("Supprimer", systemImage: "trash.fill")
-                                    }
-                                    .tint(.red)
                                 }
                             }
-                            .swipeActions(edge: .leading) {
-                                Button(action: {
-                                    jeuToEdit = jeu
-                                    showEditPopup = true
-                                }) {
-                                    Label("Éditer", systemImage: "pencil")
-                                }
-                                .tint(.blue)
-                            }
+                            .onDelete(perform: handleSwipeDelete)
                         }
-                        .onDelete(perform: handleSwipeDelete)
                     }
-                    .listStyle(PlainListStyle())
+                    .cornerRadius(15)
+                    .shadow(radius: 5)
+                    .scrollContentBackground(.hidden)
+                    .background(Color.clear)
                 }
             }
-            .navigationTitle("Liste des jeux déposés")
             .onAppear {
                 guard let utilisateurId = utilisateur.id else { return }
                 viewModel.fetchJeuxDepotByUserId(userId: utilisateurId)
@@ -105,7 +101,12 @@ struct SellerDepotListView: View {
                 }
             }
             .padding()
-            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom))
+            .background(
+                Image("generalBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+            )
             .alert(isPresented: $showDeleteConfirmation) {
                 Alert(
                     title: Text("Confirmer la suppression"),
@@ -130,7 +131,7 @@ struct SellerDepotListView: View {
                 )
             }
         }
-        .navigationTitle("\(utilisateur.nom) \(utilisateur.prenom)")
+        .navigationTitle("Liste des jeux déposés")
     }
     
     private func handleRestore(jeu: JeuDepot) {

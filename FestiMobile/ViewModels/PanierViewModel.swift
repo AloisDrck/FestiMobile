@@ -11,9 +11,18 @@ import Foundation
 class PanierViewModel: ObservableObject {
     @Published var jeuxDansPanier: [VenteJeu] = []
     
+    // Méthode pour ajouter un jeu au panier
     func ajouterAuPanier(jeu: JeuDepot) {
         if let index = jeuxDansPanier.firstIndex(where: { $0.idJeuDepot == jeu.id }) {
-            jeuxDansPanier[index].quantiteVendus += 1
+            let jeuDansPanier = jeuxDansPanier[index]
+            // Vérifier si la quantité ajoutée ne dépasse pas la quantité disponible
+            let quantiteRestante = jeu.quantiteJeuDisponible - jeuDansPanier.quantiteVendus
+            if jeuDansPanier.quantiteVendus < quantiteRestante {
+                jeuxDansPanier[index].quantiteVendus += 1
+            } else {
+                // Afficher un message d'erreur si la quantité maximale est atteinte
+                print("Quantité maximale atteinte pour ce jeu.")
+            }
         } else {
             let venteJeu = VenteJeu(
                 id: UUID().uuidString,

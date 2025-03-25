@@ -41,12 +41,7 @@ class VenteService {
             return
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-//            // Afficher les données brutes reçues pour déboguer
-//            if let responseString = String(data: data!, encoding: .utf8) {
-//                print("Réponse brute : \(responseString)")
-//            }
-//            
+        URLSession.shared.dataTask(with: request) { data, response, error in   
             guard let httpResponse = response as? HTTPURLResponse, (httpResponse.statusCode == 200 || httpResponse.statusCode == 201) else {
                 let errorMessage = "Erreur HTTP: \(String(describing: response))"
                 print(errorMessage)

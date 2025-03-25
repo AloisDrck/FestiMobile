@@ -19,49 +19,95 @@ struct AddSessionView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Dates")) {
-                    DatePicker("Date de début", selection: $dateDebut, displayedComponents: .date)
-                    DatePicker("Date de fin", selection: $dateFin, displayedComponents: .date)
+        VStack(spacing: 20) {
+            Text("Ajouter une session")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .padding(.top, 40)
+            
+            inputField(title: "Date de début", date: $dateDebut)
+            inputField(title: "Date de fin", date: $dateFin)
+            inputField(title: "Frais de dépôt (%)", text: $fraisDepot, keyboard: .decimalPad)
+            inputField(title: "Commission (%)", text: $commission, keyboard: .decimalPad)
+            
+            if !alertMessage.isEmpty {
+                Text(alertMessage)
+                    .foregroundColor(.red)
+                    .font(.caption)
+                    .padding(.top)
+            }
+            
+            Button(action: addSession) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title)
+                    Text("Ajouter la session")
+                        .fontWeight(.bold)
                 }
-                
-                Section(header: Text("Frais de dépôt")) {
-                    TextField("Montant en €", text: $fraisDepot)
-                        .keyboardType(.decimalPad)
-                }
-                
-                Section(header: Text("Commission")) {
-                    TextField("Montant en %", text: $commission)
-                        .keyboardType(.decimalPad)
-                }
-                
-                Section {
-                    Button("Ajouter la session") {
-                        addSession()
-                    }
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .cornerRadius(15)
+                .shadow(radius: 10)
+            }
+            .padding(.horizontal)
+            
+            Spacer()
+        }
+        .padding()
+        .navigationTitle("Nouvelle session")
+        .background(
+            Image("popupBackground")
+                .resizable()
+                .scaledToFill()
+                .edgesIgnoringSafeArea(.all)
+        )
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Annuler") {
+                    presentationMode.wrappedValue.dismiss()
                 }
             }
-            .navigationTitle("Nouvelle session")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Annuler") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                }
-            }
-            .alert(isPresented: $showAlert) {
-                Alert(
-                    title: Text("Erreur"),
-                    message: Text(alertMessage),
-                    dismissButton: .default(Text("OK"))
-                )
-            }
+        }
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text("Erreur"),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
     
+    private func inputField(title: String, text: Binding<String>? = nil, date: Binding<Date>? = nil, keyboard: UIKeyboardType = .default) -> some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.white)
+            if let text = text {
+                TextField(title, text: text)
+                    .padding()
+                    .background(Color.white.opacity(0.9))
+                    .cornerRadius(10)
+                    .keyboardType(keyboard)
+            } else if let date = date {
+                DatePicker(title, selection: date, displayedComponents: .date)
+                    .padding()
+                    .background(Color.white.opacity(0.9))
+                    .cornerRadius(10)
+            }
+        }
+        .padding(.horizontal)
+    }
+    
     private func addSession() {
-        guard let frais = Double(fraisDepot), let commissionValue = Double(commission) else { return }
+        guard let frais = Double(fraisDepot), let commissionValue = Double(commission) else {
+            alertMessage = "Veuillez entrer des valeurs valides pour les frais de dépôt et la commission."
+            showAlert = true
+            return
+        }
 
         let newSession = Session(id: nil, dateDebut: dateDebut, dateFin: dateFin, fraisDepot: frais, commission: commissionValue, statutSession: "Planifiée")
 
@@ -75,10 +121,3 @@ struct AddSessionView: View {
         }
     }
 }
-
-struct AddSessionView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddSessionView(viewModel: SessionViewModel())
-    }
-}
-

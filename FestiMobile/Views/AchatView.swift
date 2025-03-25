@@ -34,50 +34,49 @@ struct AchatView: View {
                         }
                     }
                 }
-                .listStyle(InsetGroupedListStyle()) // Style amélioré pour iOS
+                .cornerRadius(15)
+                .shadow(radius: 5)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
                 .onAppear {
-                    jeuDepotViewModel.fetchJeux()
+                    jeuDepotViewModel.fetchJeuxEnStock()
                 }
             }
-            .navigationTitle("Jeux en vente")
+            .navigationTitle("Achat de jeux")
         }
+        .background(
+            Image("generalBackground")
+                .resizable()
+                .scaledToFill()
+                .edgesIgnoringSafeArea(.all)
+        )
     }
     
-    // Fonction pour générer une carte pour chaque jeu
     private func jeuDepotRow(item: JeuDepot) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(UIColor.systemGray6))
-                .frame(height: 90)
-
-            HStack {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(item.nomJeu)
-                        .font(.headline)
-                        .bold()
-                        .foregroundColor(.primary)
-                    
-                    Text("Éditeur : \(item.editeurJeu)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+        HStack {
+            VStack(alignment: .leading, spacing: 5) {
+                Text(item.nomJeu)
+                    .font(.headline)
+                    .bold()
+                    .foregroundColor(.primary)
                 
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 5) {
-                    Text("\(item.prixJeu, specifier: "%.2f")€")
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(.blue)
-                    
-                    Text("Stock : \(item.quantiteJeuDisponible)")
-                        .font(.subheadline)
-                        .foregroundColor(quantiteColor(for: item.quantiteJeuDisponible))
-                }
+                Text("Éditeur : \(item.editeurJeu)")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
-            .padding()
+            Spacer()
+            VStack(alignment: .trailing, spacing: 5) {
+                Text("\(item.prixJeu, specifier: "%.2f")€")
+                    .font(.title2)
+                    .bold()
+                    .foregroundColor(.blue)
+                
+                Text("Stock : \(item.quantiteJeuDisponible)")
+                    .font(.subheadline)
+                    .foregroundColor(quantiteColor(for: item.quantiteJeuDisponible))
+            }
         }
-        .padding(.horizontal)
+        .padding()
     }
 }
 

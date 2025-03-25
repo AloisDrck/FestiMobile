@@ -110,31 +110,6 @@ class SessionService: ObservableObject {
         }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
-//            if let error = error {
-//                print("Erreur lors de l'ajout de la session :", error)
-//                DispatchQueue.main.async {
-//                    completion(false)
-//                }
-//                return
-//            }
-//
-//            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 {
-//                DispatchQueue.main.async {
-//                    completion(true)
-//                }
-//            } else {
-//                DispatchQueue.main.async {
-//                    completion(false)
-//                }
-//            }
-//            
-//            if let httpResponse = response as? HTTPURLResponse {
-//                print("Réponse HTTP :", httpResponse)
-//            }
-//            if let data = data {
-//                print("Réponse JSON :", String(data: data, encoding: .utf8) ?? "Aucune donnée")
-//            }
-            
             guard let httpResponse = response as? HTTPURLResponse else {
                 completion(false, "Aucune réponse du serveur")
                 return
@@ -154,4 +129,34 @@ class SessionService: ObservableObject {
                 }
         }.resume()
     }
+    
+    func fetchSessionById(id: String, completion: @escaping (Session?) -> Void) {
+        guard let url = URL(string: "\(apiUrl)/\(id)") else {
+            completion(nil)
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {
+                print("Erreur lors de la récupération de la session :", error ?? "Erreur inconnue")
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+                return
+            }
+
+            do {
+                let session = try JSONDecoder().decode(Session.self, from: data)
+                DispatchQueue.main.async {
+                    completion(session)
+                }
+            } catch {
+                print("Erreur de décodage de la session :", error)
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+            }
+        }.resume()
+    }
+
 }

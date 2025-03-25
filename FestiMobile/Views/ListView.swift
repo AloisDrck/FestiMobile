@@ -14,43 +14,44 @@ struct ListView: View {
     @State private var selectedVente: Vente? = nil
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]), startPoint: .top, endPoint: .bottom)
-                    .edgesIgnoringSafeArea(.all)
-                VStack {
-                    
-                    if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color.red)
-                            .cornerRadius(8)
-                            .shadow(radius: 5)
-                            .padding()
-                    }
-                    
-                    if viewModel.ventes.isEmpty {
-                        Text("Aucune vente trouvée.")
-                            .foregroundColor(.gray)
-                            .font(.title3)
-                            .padding()
-                    } else {
-                        TableView(ventes: viewModel.ventes, role: utilisateur.role, showDetailView: $showDetailView, selectedVente: $selectedVente)
-                            .padding(.top, 10)
-                    }
+        NavigationStack {
+            VStack {
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red)
+                        .cornerRadius(8)
+                        .shadow(radius: 5)
+                        .padding()
                 }
-                .onAppear {
-                    guard let utilisateurId = utilisateur.id else { return }
-                    viewModel.fetchVentes(id: utilisateurId, role: utilisateur.role)
-                }
-                .navigationTitle(utilisateur.role == .vendeur ? "Liste des ventes" : "Liste des achats")
-                .sheet(isPresented: $showDetailView) {
-                    if let vente = selectedVente {
-                        ListDetailView(vente: vente, utilisateur: $utilisateur)
-                    }
+                
+                if viewModel.ventes.isEmpty {
+                    Text("Aucune vente trouvée.")
+                        .foregroundColor(.gray)
+                        .font(.title3)
+                        .padding()
+                } else {
+                    TableView(ventes: viewModel.ventes, role: utilisateur.role, showDetailView: $showDetailView, selectedVente: $selectedVente)
+                        .padding(.top, 10)
                 }
             }
+            .onAppear {
+                guard let utilisateurId = utilisateur.id else { return }
+                viewModel.fetchVentes(id: utilisateurId, role: utilisateur.role)
+            }
+            .navigationTitle(utilisateur.role == .vendeur ? "Liste des ventes" : "Liste des achats")
+            .sheet(isPresented: $showDetailView) {
+                if let vente = selectedVente {
+                    ListDetailView(vente: vente, utilisateur: $utilisateur)
+                }
+            }
+            .background(
+                Image("generalBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+            )
         }
         .navigationTitle("\(utilisateur.nom) \(utilisateur.prenom)")
         .navigationBarTitleDisplayMode(.inline)

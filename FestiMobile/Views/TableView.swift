@@ -9,39 +9,41 @@ import SwiftUI
 
 struct TableView: View {
     var ventes: [Vente]
-    var role: RoleUtilisateur // "vendeur" ou "acheteur"
+    var role: RoleUtilisateur
     @Binding var showDetailView: Bool
     @Binding var selectedVente: Vente?
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 15) {
-                HStack {
-                    Text("Date")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                    Text(role == .vendeur ? "Acheteur" : "Vendeur")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                    Text("Montant (€)")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                }
-                .padding()
-                .background(Color.blue)
-                .cornerRadius(10)
-                
+        VStack {
+            HStack {
+                Text("Date")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                Text(role == .vendeur ? "Acheteur" : "Vendeur")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                Text("Montant (€)")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+            }
+            .padding()
+            .shadow(radius: 20)
+            .background(Color(red: 61/255, green: 72/255, blue: 106/255))
+            .cornerRadius(15)
+            List {
+                // Liste des ventes
                 ForEach(ventes) { vente in
                     Button(action: {
                         selectedVente = vente
-                        showDetailView.toggle() // Affiche le popup
+                        showDetailView.toggle()
                     }) {
                         HStack {
                             Text(formattedDate(vente.dateVente))
                                 .font(.subheadline)
+                                .foregroundColor(.black)
                                 .frame(maxWidth: .infinity)
                             
                             let nomPrenom = role == .vendeur ?
@@ -50,24 +52,24 @@ struct TableView: View {
                             
                             Text(nomPrenom)
                                 .font(.subheadline)
+                                .foregroundColor(.black)
                                 .frame(maxWidth: .infinity)
                             
                             Text(String(format: "%.2f", vente.montantTotal))
                                 .font(.subheadline)
+                                .foregroundColor(.green)
                                 .frame(maxWidth: .infinity)
                         }
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 5)
-                        .padding(.horizontal)
-                        .scaleEffect(1.0)
                     }
                 }
             }
+            .cornerRadius(15)
+            .shadow(radius: 5)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
         }
         .padding()
-        .cornerRadius(12)
+        
     }
     
     private func formattedDate(_ date: Date) -> String {

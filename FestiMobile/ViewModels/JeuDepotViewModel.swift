@@ -21,6 +21,17 @@ class JeuDepotViewModel: ObservableObject {
         }
     }
     
+    func fetchJeuxEnStock() {
+        service.fetchItems() { [weak self] jeux in
+            DispatchQueue.main.async {
+                // Filtrer les jeux où la quantiteDisponible est supérieure à 0
+                let jeuxDisponibles = jeux.filter { $0.quantiteJeuDisponible > 0 }
+                self?.jeux = jeuxDisponibles
+            }
+        }
+    }
+
+    
     func filterItems(searchTerm: String, minPrice: Double?, maxPrice: Double?, availability: String) {
         service.filterItems(searchTerm: searchTerm, minPrice: minPrice, maxPrice: maxPrice, availability: availability) { [weak self] jeux in
             DispatchQueue.main.async {
@@ -45,13 +56,19 @@ class JeuDepotViewModel: ObservableObject {
         }
     }
     
-    func loadJeuDepotById(jeuId: String) {
+    func loadJeuDepotById(jeuId: String, completion: @escaping (JeuDepot?) -> Void) {
         service.fetchJeuDepotById(jeuId: jeuId) { result in
             switch result {
             case .success(let jeu):
-                self.jeuDepot = jeu
+                DispatchQueue.main.async {
+                    self.jeuDepot = jeu
+                    completion(jeu) // Retourne le jeu via la closure
+                }
             case .failure(let error):
-                self.errorMessage = "Erreur: \(error.localizedDescription)"
+                DispatchQueue.main.async {
+                    self.errorMessage = "Erreur: \(error.localizedDescription)"
+                    completion(nil) // En cas d'erreur, on passe `nil`
+                }
             }
         }
     }

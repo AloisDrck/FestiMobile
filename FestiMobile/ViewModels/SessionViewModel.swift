@@ -10,7 +10,7 @@ import Foundation
 import Combine
 
 class SessionViewModel: ObservableObject {
-    @Published var sessions: [Session] = [] // Liste des sessions
+    @Published var sessions: [Session] = []
     @Published var countdownText: String = ""
     @Published var message: String = ""
     @Published var isSessionActive: Bool = false
@@ -22,7 +22,7 @@ class SessionViewModel: ObservableObject {
     init() {
         fetchSessions()
         observeSessionStatus()
-        sessionService.fetchSessionStatus() // Lancer la récupération initiale
+        sessionService.fetchSessionStatus()
     }
     
     func fetchSessions() {
@@ -116,19 +116,24 @@ class SessionViewModel: ObservableObject {
     }
     
     func fetchSessionEnCours() {
-        sessionService.fetchSessionDetails() // Appelle la fonction pour récupérer la session en cours
-        
-        // Attends que la session soit mise à jour dans le service
+        sessionService.fetchSessionDetails()
         sessionService.$session
             .receive(on: DispatchQueue.main)
             .sink { [weak self] session in
                 if let session = session, session.statutSession == "En Cours" {
-                    // Mettez à jour la session en cours ici
                     self?.session = session
-                    self?.sessions = [session] // Tu peux aussi ajouter la session à la liste ou l'afficher différemment
+                    self?.sessions = [session]
                     self?.message = "Une session est en cours"
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func fetchSessionById(id: String) {
+        sessionService.fetchSessionById(id: id) { [weak self] session in
+            DispatchQueue.main.async {
+                self?.session = session
+            }
+        }
     }
 }
